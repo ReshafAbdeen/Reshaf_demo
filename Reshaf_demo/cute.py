@@ -1,104 +1,111 @@
-#MY DAY THIRD OF LEARN PYTHON
+# THIS IS MY DAR FOUR OF LEARING PYTHON
 
 
-#Practice
-nums = (2, 4, 76, 8, 9, 0, 34, 14, 87, 46, 88, 99, )
-x = 34
-i = 0
-while i < len(nums):
-    if(nums[i] == x):
-        print("number found", i)
-        continue
-    else:
-        print("number not found", i)
-    i += 1
-    break
+#fist code
+def calc_avg(a, b, c):
+    sum = a + b + c
+    avg = sum / 3
+   
+    print(avg)
+    return avg
 
-
-#Practice
-nums = [3, 4,8 ,5, 9, 0, ]
-for name in nums:
-    print(name)
+calc_avg(4, 8, 4)
 
 
 
-#for loops with else
-str = "Zaynul Abdeen"
-
-for char in str :
-    if(char == "l"):
-        print(" l found")
-        break
-    print(char)
-else:
-    print("end")
- 
-#Print the element of the following liist using loop
-n = [1, 4, 3, 6, 9, 4, 0, 34, 200, ]
-
-for x in n :
-    print(x)
-
-#Search for a numm x in this touple using loop
-tup =  (4, 7, 9, 2, 0, 5, 8, 33, 55, 7,)
-x = 33
-
-idx = 0
-for el in tup:
-    if(el == x):
-        print("num found", idx)
-        break
-    idx += 1
-
-else:
-    print("num not found")
-
-# range()
-el = range(10000)
-
-for i in el:
-    print(i)
-
-for el in range(300):
-    print(el)
- 
-
-for el in range(9,200):
-    print(el)
-
-for el in range(2,22299,1000):
-    print(el)
 
 
-# Practice Question
-for el in range(100,0,-1):
-    print(el)
+
+#second code
+def calc_avg(a, b, c):
+    sum = a + b + c
+    return  sum / 3
+
+avg = calc_avg(4, 8, 6,)
+print(avg)
 
 
-for el in range(20):
-    pass
-print("Zaynul Abdeen")
 
-#Find the the sum of fisrt natural number
-n = 7
-sum = 0
-for el in range(1, n+1):
-    sum += el
-    print("sum of num=",sum)
 
-n = 7
-i = 1 
-sum = 0
-while i <= n:
-    sum += i
-    i += 1
-    print("sum of num=",sum)
 
-#Pass 
 
-#WAP to find  the factorial of first natural num .
-n = 5
-fact = 1
-for i in range(1, n+1):
-    fact *= i
+#WAF to print the lenght of list. (list in parameter)
+
+village = ["sindhouli", "meerganj", "saijna", "jouner", "sillapur"]
+movies = ["hulk", "thor" "avenger", "avatar", "veer zaraa",]
+
+def print_len(list):
+    print(len(list))
+
+print_len(village)
+print_len(movies)
+
+
+
+
+
+
+#WAF to print the element of a list in a single line (list is the parametr)
+
+village = ["sindhouli", "meerganj", "saijna", "jouner", "sillapur"]
+movies = ["hulk", "thor" "avenger", "avatar", "veerb" ]
+
+def print_list(list):
+    for item in list:
+        print(item, end = " ")
+
+print_list(village)        
+
+
+
+
+
+
+#WAF to find the factorial of n. (n is the parameter)
+
+def calc_fac(n):
+    fact = 1
+    for i in range(1, n+1):
+          fact *= i
     print(fact)
+
+calc_fac(8)
+
+
+
+
+
+
+#WAFto convert USD to INNR.
+
+def converter(usd_val):
+    inr_val = usd_val * 94.027
+    print(usd_val, "USD", inr_val, "INR")
+
+converter(7)
+
+
+
+
+
+
+#Recursion
+
+#first code
+def show(n):
+    if(n == 0):
+        return
+    print(n)
+    show(n -1)
+show(6)
+
+
+
+#seond code
+def fact(n):
+    if(n == 1 or n == 0):
+        return 1 
+    return fact(n - 1) * n
+
+print(fact(5))
+    
