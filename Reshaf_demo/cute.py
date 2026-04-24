@@ -1,53 +1,66 @@
-import sys
+# MY DAY FOUR OF LEARNING PYTHON BY YOUTUBE
 
-def show_menu():
-    print("\n--- My Task Tracker ---")
-    print("1. View Tasks")
-    print("2. Add Task")
-    print("3. Remove Task")
-    print("4. Exit")
+class student:
+    name = "zainul0"
 
-def main():
-    tasks = []
+s1 = student()
+print(s1.name)
+
+
+class student:
     
-    while True:
-        show_menu()
-        choice = input("\nChoose an option (1-4): ")
 
-        if choice == '1':
-            print("\nYOUR TASKS:")
-            if not tasks:
-                print("Abhi koi task nahi hai!")
-            else:
-                for index, task in enumerate(tasks, start=1):
-                    print(f"{index}. {task}")
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+        print("adding some student data in datalist")
 
-        elif choice == '2':
-            new_task = input("Naya task likhiye: ")
-            tasks.append(new_task)
-            print("Task add ho gaya!")
+      
 
-        elif choice == '3':
-            if not tasks:
-                print("Delete karne ke liye kuch nahi hai.")
-                continue
-            
-            try:
-                task_num = int(input("Kaunsa task number delete karna hai? "))
-                if 1 <= task_num <= len(tasks):
-                    removed = tasks.pop(task_num - 1)
-                    print(f"Removed: {removed}")
-                else:
-                    print("Invalid number!")
-            except ValueError:
-                print("Sirf number type karein!")
+s1 = student("zaynul", 55)
+print(s1.name, s1.marks)
 
-        elif choice == '4':
-            print("Goodbye!")
-            sys.exit()
-        
-        else:
-            print("Galat option! Dubara try karein.")
 
-if __name__ == "_main_":
-    main()
+
+s2 = student("arwaz", 66)
+print(s2.name, s2.marks)
+
+
+class student:
+  def __init__(self, name, marks):
+      self.name = name
+      self.marks = marks
+
+  def get_avg(self):
+      sum = 0
+      for val in self.marks:
+          sum += val
+      print("hii =", self.name, "your num avg =", sum/3)
+
+s1 = student("zaynul", [55, 88, 64])
+s1.get_avg()
+
+#Abstraction
+class Account:
+    def __init__(self, bal, acc):
+        self.balance = bal
+        self.account_no = acc
+
+    def debit(self, amount):
+        self.balance -= amount
+        print("Rs", amount, "left was your account")
+        print("total balance", self.get_balance())
+
+
+    def credit(self, amount):
+        self.balance += amount
+        print("Rs", amount, "was your account")
+        print("total balance", self.get_balance())
+
+
+    def get_balance(self):
+        return self.balance
+    
+acc1 = Account(100000, 1800002353535)
+print(acc1.balance)
+print(acc1.account_no)
