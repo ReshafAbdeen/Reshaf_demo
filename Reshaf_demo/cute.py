@@ -1,39 +1,53 @@
-# My fisrt self made game
+import sys
 
-import random
+def show_menu():
+    print("\n--- My Task Tracker ---")
+    print("1. View Tasks")
+    print("2. Add Task")
+    print("3. Remove Task")
+    print("4. Exit")
 
-def get_choices():
-    player_choice = input("Enter your choice(rock, paper, scissors) = ")
-    optin = ["rock", "paper", "scissor"]
-    computer_choice = random.choice(optin)
-    choice = {"player" : player_choice, "computer" : computer_choice}
-    return choice
-
-def check_win(player, computer):
-    print(f"You choose {player}, Computer choose {computer}")
-
-    if player == computer:
-      return "Match is tie"
-    elif player == "rock":
-      if computer == "scissor":
-       return "You choose Rock! You Win"
-      else:
-         return "You choose Paper! You loos"
+def main():
+    tasks = []
     
+    while True:
+        show_menu()
+        choice = input("\nChoose an option (1-4): ")
 
-    elif player == "paper":
-      if computer == "rock":
-        return "You choose Paper! You Win"
-      else:
-         return "You choose Scissor! You loos"
-      
-      
-    elif player == "scissor":
-      if computer == "paper":
-        return "You choose Scissor! You Win"
-      else:
-         return "You choose Rock! You loos"
-      
-choices = get_choices()
-result = check_win(choices["player"], choices["computer"])
-print(result)
+        if choice == '1':
+            print("\nYOUR TASKS:")
+            if not tasks:
+                print("Abhi koi task nahi hai!")
+            else:
+                for index, task in enumerate(tasks, start=1):
+                    print(f"{index}. {task}")
+
+        elif choice == '2':
+            new_task = input("Naya task likhiye: ")
+            tasks.append(new_task)
+            print("Task add ho gaya!")
+
+        elif choice == '3':
+            if not tasks:
+                print("Delete karne ke liye kuch nahi hai.")
+                continue
+            
+            try:
+                task_num = int(input("Kaunsa task number delete karna hai? "))
+                if 1 <= task_num <= len(tasks):
+                    removed = tasks.pop(task_num - 1)
+                    print(f"Removed: {removed}")
+                else:
+                    print("Invalid number!")
+            except ValueError:
+                print("Sirf number type karein!")
+
+        elif choice == '4':
+            print("Goodbye!")
+            sys.exit()
+        
+        else:
+            print("Galat option! Dubara try karein.")
+
+if __name__ == "_main_":
+    main()
