@@ -1,27 +1,41 @@
-#MY FIRST PASSWORD GENERATOR PROGRAMM
+#THIS MY FIRST DIMPLE GREETING APP
 
-import random
-import string
+import tkinter as tk
+from tkinter import messagebox
+import pyttsx3
 
-def generate_password(length):
-    char = string.ascii_letters + string.digits + string.punctuation
-    password = ""
+engine = pyttsx3.init()
+rate = engine.getProperty('rate')
+engine.setProperty('rate', 150)
+engine.setProperty('volume', 1.0)
 
-    for i in range(length):
-        password += random.choice(char)
+def greet_user():
+    name = entry.get()
 
-    return password
-    
+    if name.strip():
+        msg =  f"Hellow {name}. welcome to pythons world."
 
-try:
-    size = int(input("Kitna lamba password dalna hai :"))
-    
-    if size < 4:
-        print("Password 4 ank ka hona chahiye:")
+        engine.say(msg)
+        engine.runAndWait()
 
+        messagebox.showinfo("Message", msg )
     else:
-        result = generate_password(size)
-        print(f"Aapka password ye rha {result}")
+        warning_msg = "Pehle apna naam likhe."
+        engine.say(warning_msg)
+        engine.runAndWait()
+        messagebox.showwarning("Warning", warning_msg)
+             
+root = tk.Tk()
+root.title("My first GUi")
+root.geometry("300x200")
 
-except ValueError:
-    print("Invald syntax ! Phirse try rakhe.")
+label = tk.Label(root, text = "Apna naam likhen", font =("Arial", 10))
+label.pack(pady=10)
+
+entry = tk.Entry(root)
+entry.pack(pady=5)
+
+button = tk.Button(root, text="Greet Me!", command=greet_user, bg="lightblue")
+button.pack(pady=20)
+
+root.mainloop()
