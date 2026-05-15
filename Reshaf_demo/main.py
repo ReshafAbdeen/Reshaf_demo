@@ -1,41 +1,61 @@
-#THIS MY FIRST DIMPLE GREETING APP
+#I'M WRITE A RAINBOW SPIRAL DESIGN (GRAPHICS)
 
-import tkinter as tk
-from tkinter import messagebox
-import pyttsx3
+import turtle
+import colorsys
 
-engine = pyttsx3.init()
-rate = engine.getProperty('rate')
-engine.setProperty('rate', 150)
-engine.setProperty('volume', 1.0)
+t = turtle.Turtle()
+s = turtle.Screen()
+s.bgcolor("Black")
+t.speed(0)
 
-def greet_user():
-    name = entry.get()
+n = 36
+h = 0
+for i in range(300):
+    c = colorsys.hsv_to_rgb(h, 1, 0.8)
+    h -= n/2
+    t.color(c)
 
-    if name.strip():
-        msg =  f"Hellow {name}. welcome to pythons world."
+    t.forward(i * 2)
+    t.right(170)
 
-        engine.say(msg)
-        engine.runAndWait()
+turtle.done()  
 
-        messagebox.showinfo("Message", msg )
-    else:
-        warning_msg = "Pehle apna naam likhe."
-        engine.say(warning_msg)
-        engine.runAndWait()
-        messagebox.showwarning("Warning", warning_msg)
-             
-root = tk.Tk()
-root.title("My first GUi")
-root.geometry("300x200")
 
-label = tk.Label(root, text = "Apna naam likhen", font =("Arial", 10))
-label.pack(pady=10)
 
-entry = tk.Entry(root)
-entry.pack(pady=5)
 
-button = tk.Button(root, text="Greet Me!", command=greet_user, bg="lightblue")
-button.pack(pady=20)
 
-root.mainloop()
+#I'M USE PANDAS LIBRARY FIRST TIME IN MY 30 DAYS PYTHON JOURNEY.
+import pandas as pd 
+
+data = {
+    'Product': ['Laptop', 'Mouse', 'Monitor', 'Laptop', 'Mouse', 'Keyboard', None],
+    'Price': [50000, 500, 15000, 52000, 600, 2000, 0],
+    'Quantity': [2, 5, 1, 1, 10, 3, 0],
+    'Store': ['Delhi', 'Mumbai', 'Delhi', 'Mumbai', 'Delhi', 'Mumbai', 'Delhi']
+}
+
+df = pd.DataFrame(data)
+
+df = df.dropna() 
+
+df['Total_Sales'] = df['Price'] * df['Quantity']
+
+store_report = df.groupby('Store')['Total_Sales'].sum()
+
+top_product = df.groupby('Product')['Quantity'].sum().sort_values(ascending=False)
+
+print("--- Cleaned Data ---")
+print(df)
+
+print("\n--- Store Wise Sales ---")
+print(store_report)
+
+print("\n--- Top Selling Products (By Quantity) ---")
+print(top_product)
+
+
+
+
+
+
+
