@@ -1,0 +1,2 @@
+{"timestamp": "2026-05-28 23:42:24", "user": "Alice", "book_id": "B102", "action": "BORROW"}
+{"timestamp": "2026-05-28 23:42:24", "user": "Alice", "book_id": "B102", "action": "RETURN"}
