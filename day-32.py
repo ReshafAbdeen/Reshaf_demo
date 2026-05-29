@@ -1,26 +1,31 @@
-# Humne ek single function banaya jo dono ko accept karega
-def shadi_ka_function(*args, **kwargs):
-    
-    print("============ 🟢 *ARGS KA KHEL (Bina Naam Wale Mehman) ============")
-    print(f"Raw args dabba: {args}") # Yeh background me Tuple dikhayega
-    
-    # Ab jitne bhi mehman aaye hain unka naam ek-ek karke pukarenge
-    print("Mehmano ki entry ho rahi hai:")
-    for mehman in args:
-        print(f"-> Khushamdeed, {mehman} bhai!")
-        
-    print(f"\nTotal kitne log aaye bina bataye? Total: {len(args)}\n")
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+url = 'https://raw.githubusercontent.com/ammishra008/Superstore-Sales-Analysis/main/superstore.csv'
 
-    print("============ 🟠 **KWARGS KA KHEL (Naam + Gift Wale VIPs) ============")
-    print(f"Raw kwargs dabba: {kwargs}") # Yeh background me Dictionary dikhayega
-    
-    # Dictionary hai toh .items() lagakar Key (Naam) aur Value (Gift) nikalenge
-    for naam, gift in kwargs.items():
-        print(f"-> {naam} ne toh bada mast gift diya: {gift}")
+print("\nE-Commerce Sales Data load ho raha hai, thoda sa sabr rakhein...")
+df = pd.read_csv(url)
+print("Data successfully load ho gaya!")
+print(f"Total Transactions Ka Data: {df.shape[0]} Rows, {df.shape[1]} Columns\n")
 
-# --- 🚀 AB FUNCTION KO CALL KARTE HAIN ---
+print("--- Cleaning Missing Data ---")
+df['Postal Code'] = df['Postal Code'].fillna(0)
+df['Returns'] = df['Sales'].fillna(0) 
+print("✔ Kachra saaf! Data ekdam ready hai.\n")
 
-# Shuruat me humne sirf 3 dosto ke naam diye (Yeh jayenge *args me)
-# Baad me humne 'Naam=Gift' ka joda diya (Yeh jayenge **kwargs me)
-shadi_ka_function("Rahul", "Amit", "Salman", Imran="iPhone 15", Sonu="Silver Ring")
+print("--- Top Product Categories by Sales ---")
+category_sales = df.groupby('Category')[['Sales', 'Profit']].sum().reset_index()
+print(category_sales)
+
+print("\nSales vs Profit Ka Graph taiyar ho raha hai...")
+plt.figure(figsize=(10, 6))
+
+sns.barplot(x='Category', y='Sales', data=category_sales, palette='dark:salmon_r')
+
+plt.title("E-Commerce Sales Analysis by Category", fontsize=16, fontweight='bold')
+plt.xlabel("Product Category", fontsize=12)
+plt.ylabel("Total Sales (in USD)", fontsize=12)
+
+print("Graph aapki screen par khulne wala hai...")
+plt.show()
