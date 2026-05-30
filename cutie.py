@@ -1,34 +1,79 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+#Multi-Threaded Web Scraper & Data Cleaner
 
-url = 'https://raw.githubusercontent.com/wtitze/3E4A28/master/IMDb-movies.csv'
+from concurrent.futures import ThreadPoolExecutor
+import json
+import requests
 
-print("\nMovie Dataset load ho raha hai, thoda sa intezar karein...")
-columns_needed = ['title', 'year', 'genre', 'duration', 'votes', 'budget', 'usa_gross_income']
-df = pd.read_csv(url, usecols=columns_needed)
+class DataScraper:
+    def __init__(self, urls):
+        self.urls = urls
+        self.raw_data = []
+        self.cleaned_data = []
 
-print("Data successfully load ho gaya!")
-print(f"Total Movies ka Data: {df.shape[0]} Rows, {df.shape[1]} Columns\n")
+    def fetch_url(self, url):
+        """Fetches data from a single URL with error handling."""
+        try:
+            response = requests.get(url, timeout=5)
+            
+            response.raise_for_status() 
+            
+            print(f"[SUCCESS] Fetched data from: {url}")
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"[ERROR] Failed to fetch {url}: {e}")
+            return None
 
-print("--- Cleaning Missing Data ---")
-df['budget'] = df['budget'].fillna(0)
-df['usa_gross_income'] = df['usa_gross_income'].fillna(0)
-print("✔ Missing values ko clean kar diya gaya hai.\n")
+    def scrape_all_concurrently(self):
+        """Uses a thread pool to download from multiple URLs at the same time."""
+        print(f"Starting download of {len(self.urls)} sources concurrently...")
+        
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            results = executor.map(self.fetch_url, self.urls)
+            
+            self.raw_data = [res for res in results if res is not None]
 
-top_movies = df.nlargest(5, 'votes')
+    def clean_data(self):
+        """Cleans and structures the raw text data."""
+        print("\nCleaning and processing data...")
+        for raw_item in self.raw_data:
+            try:
+                data = json.loads(raw_item)
+                
+                cleaned_todos = [
+                    {
+                        "id": item.get("id"),
+                        "title": item.get("title", "").strip().capitalize(),
+                        "completed": item.get("completed", False)
+                    }
+                    for item in data if "title" in item
+                ]
+                self.cleaned_data.extend(cleaned_todos)
+            except json.JSONDecodeError:
+                print("[WARN] Found data that wasn't valid JSON. Skipping.")
 
-print("--- Top 5 Most Popular Movies ---")
-print(top_movies[['title', 'year', 'genre', 'votes']])
+    def display_results(self, limit=5):
+        """Displays a summary of the processed data."""
+        print(f"\n=== SCRAPER REPORT ===")
+        print(f"Total cleaned items: {len(self.cleaned_data)}")
+        print(f"Showing first {limit} items:")
+        
+        for item in self.cleaned_data[:limit]:
+            status = "✅" if item['completed'] else "❌"
+            print(f" [{status}] (ID: {item['id']}) {item['title']}")
 
-print("\nGraph taiyar ho raha hai...")
-plt.figure(figsize=(10, 6))
 
-sns.barplot(x='votes', y='title', data=top_movies, palette='coolwarm')
+if __name__ == "__main__":
+    target_urls = [
+        "https://jsonplaceholder.typicode.com/todos?_limit=3",
+        "https://jsonplaceholder.typicode.com/todos?_limit=4",
+        "https://invalid-url-that-will-fail.com", 
+        "https://jsonplaceholder.typicode.com/todos?_limit=2"
+    ]
 
-plt.title("IMDB Top 5 Most Voted Movies", fontsize=16, fontweight='bold')
-plt.xlabel("Total Votes (Popularity)", fontsize=12)
-plt.ylabel("Movie Name", fontsize=12)
-
-print(" Graph khulne wala hai...")
-plt.show()
+    scraper = DataScraper(target_urls)
+    
+    scraper.scrape_all_concurrently()
+    
+    scraper.clean_data()
+    
+    scraper.display_results()
