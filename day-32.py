@@ -1,31 +1,88 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from collections import Counter
+import os
 
-url = 'https://raw.githubusercontent.com/ammishra008/Superstore-Sales-Analysis/main/superstore.csv'
+class LogEntry:
+    """Represents a single log line parsed into structured data."""
+    def __init__(self, timestamp, level, message):
+        self.timestamp = timestamp
+        self.level = level.strip()
+        self.message = message.strip()
 
-print("\nE-Commerce Sales Data load ho raha hai, thoda sa sabr rakhein...")
-df = pd.read_csv(url)
-print("Data successfully load ho gaya!")
-print(f"Total Transactions Ka Data: {df.shape[0]} Rows, {df.shape[1]} Columns\n")
+    def is_critical(self):
+        """Simple business logic helper."""
+        return self.level in ["ERROR", "CRITICAL"]
 
-print("--- Cleaning Missing Data ---")
-df['Postal Code'] = df['Postal Code'].fillna(0)
-df['Returns'] = df['Sales'].fillna(0) 
-print("✔ Kachra saaf! Data ekdam ready hai.\n")
 
-print("--- Top Product Categories by Sales ---")
-category_sales = df.groupby('Category')[['Sales', 'Profit']].sum().reset_index()
-print(category_sales)
+class LogAnalyzer:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.entries = []
 
-print("\nSales vs Profit Ka Graph taiyar ho raha hai...")
-plt.figure(figsize=(10, 6))
+    def load_logs(self):
+        """Reads and parses the log file using exception handling."""
+        if not os.path.exists(self.file_path):
+            raise FileNotFoundError(f"Target log file '{self.file_path}' does not exist.")
 
-sns.barplot(x='Category', y='Sales', data=category_sales, palette='dark:salmon_r')
+        try:
+            with open(self.file_path, 'r') as file:
+                for line in file:
+                    # Skip empty lines
+                    if not line.strip():
+                        continue
+                    
+                    parts = line.split(" - ", 2)
+                    if len(parts) == 3:
+                        self.entries.append(LogEntry(parts[0], parts[1], parts[2]))
+        except Exception as e:
+            print(f"An error occurred while reading the file: {e}")
 
-plt.title("E-Commerce Sales Analysis by Category", fontsize=16, fontweight='bold')
-plt.xlabel("Product Category", fontsize=12)
-plt.ylabel("Total Sales (in USD)", fontsize=12)
+    def generate_report(self):
+        """Processes the loaded data using intermediate Python features."""
+        if not self.entries:
+            print("No logs to analyze. Did you load the file?")
+            return
 
-print("Graph aapki screen par khulne wala hai...")
-plt.show()
+        print("=== LOG ANALYSIS REPORT ===")
+        print(f"Total Log Entries Processed: {len(self.entries)}")
+
+        level_counts = Counter(entry.level for entry in self.entries)
+        print("\nLog Levels Breakdown:")
+        for level, count in level_counts.items():
+            print(f"  [{level}]: {count}")
+
+        critical_errors = [entry.message for entry in self.entries if entry.is_critical()]
+        
+        print(f"\nTotal Critical Issues: {len(critical_errors)}")
+        
+        unique_criticals = sorted(list(set(critical_errors)), key=lambda x: x.lower())
+        print("Unique Critical Issues (Sorted):")
+        for issue in unique_criticals:
+            print(f"  - {issue}")
+
+
+# --- Demonstration Setup ---
+if __name__ == "__main__":
+    # 1. Create a dummy log file for testing purposes
+    dummy_log_content = """2026-05-30 10:00:12 - INFO - User logged in
+2026-05-30 10:01:45 - ERROR - Database connection failed
+2026-05-30 10:02:30 - WARN - High memory usage detected
+2026-05-30 10:05:12 - ERROR - Database connection failed
+2026-05-30 10:06:01 - INFO - Dashboard loaded
+2026-05-30 10:07:22 - ERROR - API Gateway Timeout"""
+
+    sample_filename = "server.log"
+    with open(sample_filename, "w") as f:
+        f.write(dummy_log_content)
+
+    # 2. Instantiate and run the analyzer
+    analyzer = LogAnalyzer(sample_filename)
+    
+    try:
+        analyzer.load_logs()
+        analyzer.generate_report()
+    except FileNotFoundError as e:
+        print(e)
+    finally:
+        # Clean up the created file
+        if os.path.exists(sample_filename):
+            os.remove(sample_filename)
