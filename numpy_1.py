@@ -1,37 +1,34 @@
-import pandas as pd 
 import numpy as np
-import matplotlib.pyplot as plt
-
-
-class NumPyDataCleaner:
+import pandas as pd 
+class NumpyFilter:
     def __init__(self, file_url):
-        print("Data load ho rha hia --")
-        self.df = pd.read_csv(file_url)
-        print("Data load ho gay hai")
-
-    def clean_with_numpy(self):
-        print(f"Total khali gahde : {self.df['total_bedrooms'].isnull().sum()}")
-        bedroom_median = np.nanmedian(self.df['total_bedrooms'])
-        print(f"Numpy se mila median : {bedroom_median}")
-
-        self.df.loc[np.isnan(self.df['total_bedrooms']), 'total_bedrooms'] = bedroom_median
-        print("---checking after numpy---")
-        print(f"Total khali ghade bache :{self.df['total_bedrooms'].isnull().sum()}")
-
+        print("---Data load ho  rah hai ---")
+        df = pd.read_csv(file_url)
         
-        print("\n--Generating bar Chart--")
-        summary = self.df.groupby('ocean_proximity')['median_house_value'].mean().reset_index()
+        self.price = df['median_house_value'].to_numpy()
+        self.age = df['housing_median_age'].to_numpy()
+        self.area = df['ocean_proximity'].to_numpy()
 
-        plt.figure(figsize=(7, 6))
-        plt.bar(summary['ocean_proximity'], summary['median_house_value'], color = 'skyblue', edgecolor = 'black')
-        plt.title('Average House Value by Ocean Proximity', fontsize=14, fontweight='bold')
-        plt.xlabel('Ocean Proximity (Area)', fontsize=12)
-        plt.ylabel('Avg House Value ($)', fontsize=12)
-        plt.grid(axis = 'y', linestyle = '--', alpha = 0.7)
-        plt.show()
+    def filter_with_numpy(self):
+        print("\n---Filtering using Numpy---")
+        print("\n---Condition : Age > 50 & price < 150000")
+        mask = np.logical_and(self.age > 50, self.price < 150000)
+        filetr_price = self.price[mask]
+        filter_age = self.age[mask]
+        filter_area = self.area[mask]
+
+
+        print(f"Numpy se mile saste or purane gharo ki ginti: {len(filetr_price)} " )
+        print("\n---pehle 3 gharo ki ginti---")
+        for i in range(3):
+          print(f"Ghar {i+1} Age = {filter_age[i]} , Price = {filetr_price[i]}, Area = {filter_area[i]}")
+
 if __name__ == "__main__":
     url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
 
-np_bot = NumPyDataCleaner(url)
-np_bot.clean_with_numpy()
+numpy_bot = NumpyFilter(url)
+numpy_bot.filter_with_numpy()
+
+
+
 
