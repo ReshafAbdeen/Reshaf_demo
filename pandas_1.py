@@ -62,3 +62,33 @@ if __name__ == "__main__":
 analyze_bot = PandasMasterClass(url)
 analyze_bot.analyze_area_wise_price()
 analyze_bot.advanced_multi_aggretion()
+
+
+
+#Data sorter
+
+import pandas as pd
+
+class PandasSortermaster:
+    def __init__(self, file_url):
+        print("===Sorting master Bot===")
+        self.df = pd.read_csv(file_url)
+        print("===Data Succesfully load ho gay hai===")
+
+    def get_sorter_sts(self):
+        print("\n===Grouping + Sorting===")
+        stats = self.df.groupby('ocean_proximity').agg({
+            'median_house_value' : 'mean',
+            'housing_median_age' : 'max',
+            'ocean_proximity' : 'count'       
+        }) 
+
+        stats.columns = ['Avg_Price','Max_Age','Total_House']
+        sorted_stats = stats.sort_values(by='Avg_Price', ascending=False)
+        print(sorted_stats)
+ 
+if __name__ == "__main__":
+    url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
+
+    sorter_bot = PandasSortermaster(url)
+    sorter_bot.get_sorter_sts()
