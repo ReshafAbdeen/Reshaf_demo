@@ -1,94 +1,46 @@
-#PANDAS SERIES
+#Pandas Series
 
 import pandas as pd 
-import numpy as np
+url ="https://raw.githubusercontent.com/datasets/population/master/data/population.csv"
+print("==URL se data load ho rha hai===")
+try:        
+    row_df = pd.read_csv(url)
+    print("===Data load ho gya hai===")
+    print(f"\nTotal Row loaded : {len(row_df)}")
+    print("\n===Suruati 5 line print hogi===")
+    print(row_df.head())
+    print("-"*50)
 
-class AdvancedNumpyDataFixer:
-    def __init__(self, file_url):
-        print("=====Data load ho rha hai=====")
-        self.df = pd.read_csv(file_url)
-        print("====Data ek num load hua hai====")
-        self.bedrooms = self.df['total_bedrooms'].to_numpy().copy()
-        print(f"\nTotal element in Array : {len(self.bedrooms)}")
+    cleaned_df = row_df.dropna(subset=['Year', 'Value'])
+    cleaned_df = cleaned_df.drop_duplicates()
 
-    def fixing_missing_value(self):
-        print("===Fixing values using Numpy===")
-        fixing_eee = np.isnan(self.bedrooms)
-        print(f"====Pehle gharo ki ginti : {np.sum(fixing_eee)}")
+    filtered_df = cleaned_df[(cleaned_df['Country Name'] == 'India') & (cleaned_df['Year'] > 2010)]
+    print(filtered_df)
+    print('-'*50)
 
-        fix_median = np.nanmedian(self.bedrooms)
-        print(f"====Bache hue gharo ka Median : {fix_median}")
+except:
+    print("URl se gaandu data nhi load hua saaalala")
+    
+pop_2011 = filtered_df['Value'].iloc[0] 
+pop_2024 = filtered_df['Value'].iloc[-1] 
 
-        self.bedrooms[fixing_eee] = fix_median
+growth_avg = ((pop_2024 - pop_2011) /pop_2011) * 100
+print(f"India ki badti abaadi ki Percentage Growth : {growth_avg:.2f}%")
 
-        new_fixing_df = np.isnan(self.bedrooms)
-        print(f"\nBaad me khali wale Gharo ki Ginti : {np.sum(new_fixing_df)}")
 
-if __name__ == "__main__":
-    url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
 
-    numpy_bot = AdvancedNumpyDataFixer(url)
-    numpy_bot.fixing_missing_value()
 
+#Movies Rating Analyzer
 import pandas as pd 
-class PandasMasterClass:
-    def __init__(self, file_url):
-        print("===Pandas Group & Aggretion Bot===")
-        self.df = pd.read_csv(file_url)
-        print("==Data succesfully loaded==")
+url = "https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv"
+print("==Data load ho rha hai URl se==")
 
-    def analyze_area_wise_price(self):
-        print("===\nArea wise Avverage House===")
-        area_group = self.df.groupby('ocean_proximity')['median_house_value'].mean()
-        print("==Har ghar ki avg Value==")
-        print(area_group.round(2))
+try:
+    movies_df = pd.read_csv(url) 
+    cleaned_df = movies_df[['binary', 'budget', 'year']].copy()
+    print("===Data load ho gya hai===")
+    rating_avg = cleaned_df.groupby('binary')['budget'].mean()
+    print(rating_avg)
 
-    def advanced_multi_aggretion(self):
-        print("\n==Advanced Multi stats (Mean , Count , Max)===")
-
-        stats = self.df.groupby('ocean_proximity').agg({
-            'median_house_value': 'mean',
-            'ocean_proximity' : 'count',
-            'housing_median_age' : 'max'
-        })
-
-
-        stats.columns = ['Max_price','Total_house','Avg_age']
-        print(stats)
-
-if __name__ == "__main__":
-    url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
-
-analyze_bot = PandasMasterClass(url)
-analyze_bot.analyze_area_wise_price()
-analyze_bot.advanced_multi_aggretion()
-
-
-
-#Data sorter
-
-import pandas as pd
-
-class PandasSortermaster:
-    def __init__(self, file_url):
-        print("===Sorting master Bot===")
-        self.df = pd.read_csv(file_url)
-        print("===Data Succesfully load ho gay hai===")
-
-    def get_sorter_sts(self):
-        print("\n===Grouping + Sorting===")
-        stats = self.df.groupby('ocean_proximity').agg({
-            'median_house_value' : 'mean',
-            'housing_median_age' : 'max',
-            'ocean_proximity' : 'count'       
-        }) 
-
-        stats.columns = ['Avg_Price','Max_Age','Total_House']
-        sorted_stats = stats.sort_values(by='Avg_Price', ascending=False)
-        print(sorted_stats)
- 
-if __name__ == "__main__":
-    url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
-
-    sorter_bot = PandasSortermaster(url)
-    sorter_bot.get_sorter_sts()
+except Exception as e:
+    print(f"Kuch Gadbad hui hai : {e}")
