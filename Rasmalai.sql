@@ -16,7 +16,7 @@ CREATE TABLE test_table (
 INSERT INTO test_table (id, naam, gmail, account_id, gender)
  VALUES 
  (1, 'Zaynul', 'zaynul@gmail.com', 987654321, 'Male'),
-(2, 'Yasmin', 'yasmin@gmail.com', 987654322, 'Female'),
+(2, 'Yasin', 'yasin@gmail.com', 987654322, 'Female'),
 (3, 'Cutie', 'cutie@gmail.com', 987654323, 'Female');
 
 	SELECT * FROM test_table;
