@@ -1,46 +1,19 @@
-#Pandas Series
-
 import pandas as pd 
-url ="https://raw.githubusercontent.com/datasets/population/master/data/population.csv"
-print("==URL se data load ho rha hai===")
-try:        
-    row_df = pd.read_csv(url)
-    print("===Data load ho gya hai===")
-    print(f"\nTotal Row loaded : {len(row_df)}")
-    print("\n===Suruati 5 line print hogi===")
-    print(row_df.head())
-    print("-"*50)
+class Neural:
+    def __init__(self, file_url):
+        print("===Data load ho rha hai===")
+        self.df = pd.read_csv(file_url)
+        print("Data load ho gya hai")
 
-    cleaned_df = row_df.dropna(subset=['Year', 'Value'])
-    cleaned_df = cleaned_df.drop_duplicates()
+    def Firse_Neural(self):
+        
+        table1 = self.df.head(10)
+        table2 = self.df.tail(12)
 
-    filtered_df = cleaned_df[(cleaned_df['Country Name'] == 'India') & (cleaned_df['Year'] > 2010)]
-    print(filtered_df)
-    print('-'*50)
+        merge_data = pd.merge(table1,table2 , on='ocean_proximity')
+        print(merge_data[['ocean_proximity']].head(10))
 
-except:
-    print("URl se gaandu data nhi load hua saaalala")
-    
-pop_2011 = filtered_df['Value'].iloc[0] 
-pop_2024 = filtered_df['Value'].iloc[-1] 
-
-growth_avg = ((pop_2024 - pop_2011) /pop_2011) * 100
-print(f"India ki badti abaadi ki Percentage Growth : {growth_avg:.2f}%")
-
-
-
-
-#Movies Rating Analyzer
-import pandas as pd 
-url = "https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv"
-print("==Data load ho rha hai URl se==")
-
-try:
-    movies_df = pd.read_csv(url) 
-    cleaned_df = movies_df[['binary', 'budget', 'year']].copy()
-    print("===Data load ho gya hai===")
-    rating_avg = cleaned_df.groupby('binary')['budget'].mean()
-    print(rating_avg)
-
-except Exception as e:
-    print(f"Kuch Gadbad hui hai : {e}")
+if __name__=="__main__":
+    url = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
+nn = Neural(url)
+nn.Firse_Neural()
