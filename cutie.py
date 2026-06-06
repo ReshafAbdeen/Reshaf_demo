@@ -1,17 +1,17 @@
-#Diamond Pettern
-n = 5
-for i in range(1, n + 1):
-    for j in range(1, 2 * n):
-        if j == n - i + 1 or j == n + i - 1:
-            print("*", end="")
-        else:
-            print(" ", end="")
-    print()
+info = [
+    ('Zaynul', 'Math'),
+    ('Yasmin', 'Arabic'),
+    ('Cutie', 'englice'),
+    ('Zaynul', 'Science'),
+    ('Yasmin', 'Urdu'),
+    ('Varish', 'Math')
+]
 
-for i in range(n - 1, 0, -1):
-    for j in range(1, 2 * n):
-        if j == n - i + 1 or j == n + i - 1:
-            print("*", end="")
-        else:
-            print(" ", end="")
-    print()
+dict = {}
+for name, courses in info:
+  if(dict.get(name) == None): 
+    dict.update({name:set()})
+    dict[name].add(courses)
+  else:
+    dict[name].add(courses)
+print(dict)
