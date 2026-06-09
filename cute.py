@@ -1,46 +1,67 @@
-import re
-from collections import Counter
+import csv
+import requests
+from bs4 import BeautifulSoup
 
-log_data = """
-192.168.1.10 - - [08/Jun/2026:10:00:01] "GET /home HTTP/1.1" 200 2326
-192.168.1.12 - - [08/Jun/2026:10:00:05] "POST /login HTTP/1.1" 401 512
-192.168.1.10 - - [08/Jun/2026:10:01:15] "GET /about HTTP/1.1" 200 1243
-192.168.1.15 - - [08/Jun/2026:10:02:45] "GET /index HTTP/1.1" 404 312
-192.168.1.12 - - [08/Jun/2026:10:03:12] "GET /home HTTP/1.1" 200 2326
-192.168.1.20 - - [08/Jun/2026:10:04:01] "POST /submit HTTP/1.1" 500 843
-192.168.1.10 - - [08/Jun/2026:10:05:00] "GET /home HTTP/1.1" 200 2326
-"""
+def scrape_quotes(url):
+    """
+    Scrapes quotes, authors, and tags from a website and returns them as a list of dictionaries.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to retrieve data: {e}")
+        return []
 
-def analyze_logs(logs):
-    log_pattern = r'(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?"\s*(?P<status>\d{3})'
-    
-    ips = []
-    status_codes = []
-    
-    for line in logs.strip().split('\n'):
-        match = re.search(log_pattern, line)
-        if match:
-            ips.append(match.group('ip'))
-            status_codes.append(match.group('status'))
-            
-    ip_counts = Counter(ips)
-    status_counts = Counter(status_codes)
-    
-    return ip_counts, status_counts
+    soup = BeautifulSoup(response.text, "html.parser")
+    scraped_data = []
+    quote_elements = soup.find_all("div", class_="quote")
 
-def display_report(ip_counts, status_counts):
-    print("=== LOG ANALYSIS REPORT ===")
-    
-    print("\n[+] Requests per IP Address:")
-    for ip, count in sorted(ip_counts.items(), key=lambda item: item[1], reverse=True):
-        print(f"  {ip:<15} : {count} requests")
+    for element in quote_elements:
+        text = element.find("span", class_="text").text.strip()
+        author = element.find("small", class_="author").text.strip()
         
-    print("\n[+] HTTP Status Code Breakdown:")
-    for status, count in status_counts.items():
-        status_meanings = {"200": "OK", "401": "Unauthorized", "404": "Not Found", "500": "Server Error"}
-        meaning = status_meanings.get(status, "Unknown")
-        print(f"  {status} ({meaning}) : {count} times")
+        tag_elements = element.find("div", class_="tags").find_all("a", class_="tag")
+        tags = [tag.text.strip() for tag in tag_elements]
+        tags_str = ", ".join(tags) 
+
+        scraped_data.append({
+            "Quote": text,
+            "Author": author,
+            "Tags": tags_str
+        })
+
+    return scraped_data
+
+def save_to_csv(data, filename="scraped_quotes.csv"):
+    """
+    Saves a list of dictionaries into a CSV file.
+    """
+    if not data:
+        print("No data to save.")
+        return
+
+    headers = data[0].keys()
+
+    try:
+        with open(filename, mode="w", encoding="utf-8", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=headers)
+            
+            writer.writeheader()
+            writer.writerows(data)
+            
+        print(f"Successfully saved {len(data)} items to '{filename}'!")
+    except IOError as e:
+        print(f"File Error: Could not save data to file. {e}")
 
 if __name__ == "__main__":
-    ip_data, status_data = analyze_logs(log_data)
-    display_report(ip_data, status_data)
+    TARGET_URL = "https://quotes.toscrape.com/"
+    print(f"Starting scraper for: {TARGET_URL}...")
+    
+    results = scrape_quotes(TARGET_URL)
+    
+    save_to_csv(results)
