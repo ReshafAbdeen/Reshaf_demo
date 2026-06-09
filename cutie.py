@@ -1,48 +1,54 @@
-import urllib.request
-import urllib.error
-from concurrent.futures import ThreadPoolExecutor
-import time
 
-URLS = [
-    "https://www.google.com",
-    "https://www.github.com",
-    "https://www.wikipedia.org",
-    "https://www.thisisafakewebsite12345.com",  
-    "https://httpbin.org/status/404",          
-    "https://httpbin.org/status/500"           
-]
+class BudgetTracker:
+   def __init__(self, total_budget):
+      self.total_budget = total_budget
+      self.expense = []
+    # user = int(input("Apna monthly budget daale : "))
+    # print(f"Apka mothly budget : {user} ")
 
-def check_url(url):
-    """
-    Worker function that attempts to connect to a URL 
-    and returns its HTTP status status.
-    """
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-    req = urllib.request.Request(url, headers=headers)
-    
-    try:
-        with urllib.request.urlopen(req, timeout=5) as response:
-            return url, response.getcode(), "Healthy"
-    except urllib.error.HTTPError as e:
-        return url, e.code, f"Server Error"
-    except urllib.error.URLError as e:
-        return url, None, f"Unreachable ({e.reason})"
-    except Exception as e:
-        return url, None, f"Unexpected Error: {str(e)}"
+   def add_expense(self, item_naam, amount, category):
+    naya_kharcha = {
+        "item": item_naam,
+        "amount": amount,
+        "category":category
+        }
+    self.expense.append(naya_kharcha)
+    print(f"{item_naam} ${amount} succesfully addd ho gya hai.")
 
-def run_multithreaded():
-    print(f"Starting status check on {len(URLS)} URLs using multithreading...\n")
-    start_time = time.time()
-    
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        results = executor.map(check_url, URLS)
-        
-        for url, code, status in results:
-            code_str = f"[{code}]" if code else "[---]"
-            print(f" {code_str:<7} | {status:<15} | {url}")
-            
-    end_time = time.time()
-    print(f"\nFinished in {end_time - start_time:.2f} seconds.")
+
+   def view_suumry(self):
+    total_sum = []
+
+    for k in self.expense:
+       total_sum = total_sum + k['amount']
+       print(f"{k['item']} {k['category']} : Rs{k['amount']}")
+
+    bacha_paisa = self.expense - total_sum
+    print(bacha_paisa)
+
+
+    if total_sum > (self.expense * 0.8):
+        print("Waarnig!!! Kharcha 80% paar gya hai....")
+    else:
+        print("Moj lo bhai abhi bohot paise hai...")
 
 if __name__ == "__main__":
-    run_multithreaded()
+    print("Welcome to budget analyzer")
+    budgte = float(input("Apna budget daale : "))
+    tarker = BudgetTracker(budgte)
+
+    print("Apne kharche add karen..")
+    naam = input("Item naam dalo : ")
+    amo = int(input("Amount daalo : "))
+    cat = input("Category Daalo : ")
+    tarker.add_expense(naam, amo, cat)
+
+
+
+
+
+
+
+    
+
+
