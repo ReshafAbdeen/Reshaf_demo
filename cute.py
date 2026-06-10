@@ -1,11 +1,9 @@
+#String ulta Pulta
 
-print("\033[1m" + "Welcome to Number Jumper" + "\033[0m")
+ulta_naam = ""
+user = input("Apna naam daalo : ")
 
-pass
-user = int(input("Enter a randome number : "))
-for i in range(1 ,user+1):
-    if( i % 5 == 0):
-       print("Jump")
+for char in user:
+    ulta_naam =  char + ulta_naam
+print("Apka ulta naam ye rha : " , ulta_naam)
 
-    else:
-        print(i)
