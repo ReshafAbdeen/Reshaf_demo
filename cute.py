@@ -1,15 +1,17 @@
-list =  [1, 4, 6, 4, 7, 9, 8, 5, 9, 0, 3, 5, 6, 3 ]
-unique_number = []
-duplicate_num = []
+#The Tech Interview Puzzel
 
+print("\033[1m"+"Welcome to The Tech Interview Puzzel"+"\033[0m")
 
-for i in list:
-    if i not in unique_number:
-     unique_number.append(i)
+user = int(input("Enter a random number : "))
+for i in range(1, user + 1 ):
+    if i % 3== 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    elif  i % 3 == 0 and i % 5 == 0:
+        print("FizzBuss")
+            
     else:
-       duplicate_num.append(i)
-       
-print(unique_number)
-print(duplicate_num)
-
-
+        print(i)
+          
+        
