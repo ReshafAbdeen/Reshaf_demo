@@ -1,9 +1,15 @@
-#String ulta Pulta
+list =  [1, 4, 6, 4, 7, 9, 8, 5, 9, 0, 3, 5, 6, 3 ]
+unique_number = []
+duplicate_num = []
 
-ulta_naam = ""
-user = input("Apna naam daalo : ")
 
-for char in user:
-    ulta_naam =  char + ulta_naam
-print("Apka ulta naam ye rha : " , ulta_naam)
+for i in list:
+    if i not in unique_number:
+     unique_number.append(i)
+    else:
+       duplicate_num.append(i)
+       
+print(unique_number)
+print(duplicate_num)
+
 
