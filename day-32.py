@@ -1,49 +1,25 @@
-import os
-from tkinter import Button, Label, Tk, filedialog, messagebox
+import random
 
+def guess_game():
+    secret_number = random.randint(1, 20)
+    attempts = 0
+    
+    print("Welcome to the Guessing Game!")
+    print("I'm thinking of a number between 1 and 20.")
 
-class FileUploaderApp:
+    while True:
+        try:
+            guess = int(input("Take a guess: "))
+            attempts += 1
+            
+            if guess < secret_number:
+                print("Too low! Try again.")
+            elif guess > secret_number:
+                print("Too high! Try again.")
+            else:
+                print(f"Awesome job! You guessed it in {attempts} attempts.")
+                break
+        except ValueError:
+            print("Oops! Please enter a valid number.")
 
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Python Local File Processor")
-        self.root.geometry("400x200")
-
-        self.label = Label(
-            root, text="Select a file to 'upload' into the system:"
-        )
-        self.label.pack(pady=20)
-
-        self.upload_btn = Button(
-            root, text="Browse & Upload File", command=self.process_file
-        )
-        self.upload_btn.pack(pady=10)
-
-        self.status_label = Label(root, text="", fg="green")
-        self.status_label.pack(pady=10)
-
-    def process_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Select File",
-            filetypes=(("Text Files", "*.txt"), ("All Files", "*.*")),
-        )
-
-        if not file_path:
-            return
-
-        file_name = os.path.basename(file_path)
-        self.status_label.config(
-            text=f"Processing: {file_name}...", fg="blue"
-        )
-
-        messagebox.showinfo(
-            "Success", f"File '{file_name}' successfully loaded into Python!"
-        )
-
-        self.status_label.config(text=f"✅ Loaded: {file_name}", fg="green")
-
-
-if __name__ == "__main__":
-    root = Tk()
-    app = FileUploaderApp(root)
-    root.mainloop()
+guess_game()
