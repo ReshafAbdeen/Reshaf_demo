@@ -1,52 +1,88 @@
+import json
 import os
-import subprocess
-import sys
 
+class Task:
+    """Class to represent a single task."""
+    def __init__(self, title, description):
+        self.title = title
+        self.description = description
+        self.is_completed = False
 
-def run_git_command(command):
-    """Helper function to run a system command and handle errors."""
-    try:
-        result = subprocess.run(
-            command,
-            shell=True,
-            check=True,
-            text=True,
-            capture_output=True,
-        )
-        return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing: {command}")
-        print(f"Git said: {e.stderr.strip()}")
-        sys.exit(1)
+    def mark_complete(self):
+        self.is_completed = True
 
+    def to_dict(self):
+        """Convert object to dictionary for JSON saving."""
+        return {
+            "title": self.title,
+            "description": self.description,
+            "is_completed": self.is_completed
+        }
 
-def git_upload():
-    if not os.path.exists(".git"):
-        print(
-            "This directory is not a Git repository. Run 'git init' first!"
-        )
-        return
+class ProjectManager:
+    """Class to manage a collection of tasks and handle file I/O."""
+    def __init__(self, filename="tasks.json"):
+        self.filename = filename
+        self.tasks = self.load_tasks()
 
-    print("Checking repository status...")
+    def add_task(self, title, description):
+        new_task = Task(title, description)
+        self.tasks.append(new_task)
+        self.save_tasks()
+        print(f"✅ Task '{title}' added successfully!")
 
-    print("➕ Staging changes...")
-    run_git_command("git add .")
+    def list_tasks(self):
+        if not self.tasks:
+            print("\n📭 No tasks found.")
+            return
+        
+        print("\n--- Current Tasks ---")
+        for index, task in enumerate(self.tasks, start=1):
+            status = "Done" if task.is_completed else "Pending"
+            print(f"{index}. {task.title} [{status}]")
+            print(f"   Description: {task.description}")
 
-    commit_message = input("Enter your commit message: ").strip()
+    def complete_task(self, index):
+        try:
+            self.tasks[index - 1].mark_complete()
+            self.save_tasks()
+            print(f"🎉 Task {index} marked as complete!")
+        except IndexError:
+            print("Invalid task number.")
 
-    if not commit_message:
-        commit_message = "Automated backup via Python script"
+    def save_tasks(self):
+        """Saves the list of tasks to a JSON file."""
+        with open(self.filename, 'w') as f:
+            json_data = [task.to_dict() for task in self.tasks]
+            json.dump(json_data, f, indent=4)
 
-    print(f" Committing changes with message: '{commit_message}'...")
-    run_git_command(f'git commit -m "{commit_message}"')
-
-    branch_name = run_git_command("git branch --show-current")
-
-    print(f"🛰️ Pushing to origin/{branch_name}...")
-    run_git_command(f"git push origin {branch_name}")
-
-    print("Successfully uploaded to Git!")
-
+    def load_tasks(self):
+        """Loads tasks from a JSON file if it exists."""
+        if not os.path.exists(self.filename):
+            return []
+        try:
+            with open(self.filename, 'r') as f:
+                data = json.load(f)
+                loaded_tasks = []
+                for item in data:
+                    task = Task(item['title'], item['description'])
+                    task.is_completed = item['is_completed']
+                    loaded_tasks.append(task)
+                return loaded_tasks
+        except Exception:
+            print("Error loading saved tasks. Starting fresh.")
+            return []
 
 if __name__ == "__main__":
-    git_upload()
+    manager = ProjectManager()
+    
+    print("--- Adding Tasks ---")
+    manager.add_task("Learn Python OOP", "Understand classes, objects, and methods.")
+    manager.add_task("Build a web app", "Use Flask or Django to make a backend.")
+    
+    manager.list_tasks()
+    
+    print("\n--- Completing a Task ---")
+    manager.complete_task(1)
+    
+    manager.list_tasks()
