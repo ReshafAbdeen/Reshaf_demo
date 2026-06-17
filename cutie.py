@@ -1,16 +1,7 @@
-class DatabaseConnection:
-    def __init__(self, db_name):
-        self.db_name = db_name
-
-    def __enter__(self):
-        print(f"Connecting to database: {self.db_name}")
-        return self  
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print(f"Disconnecting from database: {self.db_name}")
-        if exc_type:
-            print(f"An error occurred: {exc_val}")
-
-with DatabaseConnection("Production_DB") as db:
-    print("Executing queries...")
-
+python_students = [['Harry', 37.21], ['Berry', 37.21], ['Tina', 37.2], ['Akriti', 41], ['Harsh', 39]]
+scores = sorted(list(set([scores for names, scores in python_students])))
+second_lowest = scores[1]
+names = [names for names, scores in python_students if scores == second_lowest]
+names.sort()
+for name in names:
+    print(name)
