@@ -1,63 +1,51 @@
-class InsufficientFundsError(Exception):
+import asyncio
+import time
 
-    pass
+
+async def fetch_weather_data() -> dict:
+    """Simulates a fast API call to a weather service."""
+    print("Weather API: Starting request...")
+    # asyncio.sleep simulates waiting for a network response without blocking Python
+    await asyncio.sleep(1.5)
+    print("Weather API: Data received!")
+    return {"temp": "22°C", "condition": "Sunny"}
 
 
-class BankAccount:
-    bank_name = "Apex Digital Bank"
+async def fetch_stock_prices() -> dict:
+    """Simulates a slow API call to a financial service."""
+    print("Stocks API: Starting request...")
+    await asyncio.sleep(3.0)
+    print("Stocks API: Data received!")
+    return {"AAPL": 175.40, "TSLA": 210.15}
 
-    def __init__(self, account_holder: str, initial_balance: float = 0.0):
-        self.account_holder = account_holder
 
-        if initial_balance < 0:
-            raise ValueError("Initial balance cannot be negative.")
-        self.__balance = initial_balance
+async def fetch_user_notifications() -> list:
+    """Simulates a very fast database query for notifications."""
+    print("Notifications: Querying database...")
+    await asyncio.sleep(0.5)
+    print("Notifications: Data received!")
+    return ["New message from Bob", "Server update completed"]
 
-    @property
-    def balance(self) -> float:
-        return self.__balance
 
-    def deposit(self, amount: float) -> float:
-        """Deposits money into the account."""
-        if amount <= 0:
-            raise ValueError("Deposit amount must be positive.")
+async def main():
+    start_time = time.time()
+    print("Initializing Dashboard Data Fetch...\n")
 
-        self.__balance += amount
-        print(f"-$ {amount:.2f} deposited successfully.")
-        return self.__balance
+    results = await asyncio.gather(
+        fetch_weather_data(), fetch_stock_prices(), fetch_user_notifications()
+    )
 
-    def withdraw(self, amount: float) -> float:
-        """Withdraws money, raising a custom error if funds are low."""
-        if amount <= 0:
-            raise ValueError("Withdrawal amount must be positive.")
+    weather, stocks, notifications = results
 
-        if amount > self.__balance:
-            raise InsufficientFundsError(
-                f"Attempted to withdraw ${amount:.2f}, but only ${self.__balance:.2f} is available."
-            )
+    print("\n================ DASHBOARD RESULTS ================")
+    print(f"Weather: {weather['temp']}, {weather['condition']}")
+    print(f"Stocks:  AAPL -> ${stocks['AAPL']}, TSLA -> ${stocks['TSLA']}")
+    print(f"Alerts:  {len(notifications)} unread notifications")
+    print("===================================================")
 
-        self.__balance -= amount
-        print(f"-$ {amount:.2f} withdrawn successfully.")
-        return self.__balance
-
-    def __str__(self) -> str:
-        return f"Account[{self.account_holder}] at {self.bank_name} | Balance: ${self.__balance:.2f}"
+    total_time = time.time() - start_time
+    print(f"⏱️ Total execution time: {total_time:.2f} seconds")
 
 
 if __name__ == "__main__":
-    print(f"--- Welcome to {BankAccount.bank_name} ---")
-
-    user_account = BankAccount("Alex Mercer", 500.00)
-    print(user_account)
-
-    user_account.deposit(250.50)
-    print(f"New Balance: ${user_account.balance:.2f}")
-
-    try:
-        print("\nAttempting to withdraw $1,000...")
-        user_account.withdraw(1000.00)
-    except InsufficientFundsError as e:
-        print(f"Transaction Declined: {e}")
-
-
-    print(f"\nFinal State: {user_account}")
+    asyncio.run(main())
