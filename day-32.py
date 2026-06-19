@@ -1,17 +1,27 @@
+import time
+from contextlib import contextmanager
 
 
-employees = [
-    {"name": "Alice", "role": "developer", "salary": 90000},
-    {"name": "Bob", "role": "designer", "salary": 75000},
-    {"name": "Charlie", "role": "developer", "salary": 110000},
-]
+@contextmanager
+def execution_timer(block_name: str):
+    """Timer that automatically measures the execution of a 'with' block."""
+    print(f"⏱️ [Entering] Starting timer for: '{block_name}'")
+    start_time = time.perf_counter()
 
-devs_with_bonus = [
-    {**emp, "bonus": emp["salary"] * 0.10}
-    for emp in employees
-    for emp in employees 
-    if emp["role"] == "developer"
-]
+    try:
+        yield
+    finally:
+        end_time = time.perf_counter()
+        print(
+            f"[Exiting] '{block_name}' took {end_time - start_time:.4f} seconds.\n"
+        )
 
-# 3. Clean Output
-print(*(f"{e['name']}: ${e['bonus']:.0f} Bonus" for e in devs_with_bonus), sep="\n")
+
+if __name__ == "__main__":
+    with execution_timer("Heavy Calculation"):
+        print("Processing data...")
+        _ = [x**2 for x in range(5_000_000)]
+
+    with execution_timer("Network Delay Simulation"):
+        print("Simulating a slow network request...")
+        time.sleep(0.5)
