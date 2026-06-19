@@ -1,48 +1,77 @@
-import time
-from collections.abc import Generator
-from functools import wraps
+import json
+import shutil
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from pathlib import Path
 
 
-def monitor_performance(func):
-    """A decorator that measures execution time and memory scale."""
+class TransactionError(Exception):
+    """Raised when a database transaction fails and requires a rollback."""
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        print(f"\n[START] Executing '{func.__name__}'...")
-        start_time = time.perf_counter()
-
-        result = func(*args, **kwargs)
-
-        end_time = time.perf_counter()
-        duration = end_time - start_time
-        print(f"[END] '{func.__name__}' finished in {duration:.6f} seconds.")
-        return result
-
-    return wrapper
+    pass
 
 
-def stream_sensor_readings(limit: int) -> Generator[dict, None, None]:
-    """A generator that lazily yields millions of simulated telemetry packets."""
-    for i in range(1, limit + 1):
-        yield {
-            "id": i,
-            "timestamp": time.time(),
-            "reading": (i * 0.105) % 100,
-        }
+@dataclass
+class UserRegistry:
+    db_path: Path
+    data: dict = field(default_factory=dict)
 
+    def __post_init__(self):
+        """Initializes the database file if it doesn't exist."""
+        self.db_path = Path(self.db_path)
+        if self.db_path.exists():
+            self.load()
+        else:
+            self.save()
 
-@monitor_performance
-def process_data_stream(total_records: int):
-    """Processes a stream of data efficiently using the generator."""
-    data_stream = stream_sensor_readings(total_records)
+    def load(self) -> None:
+        """Loads data directly from the JSON file."""
+        with open(self.db_path, "r", encoding="utf-8") as f:
+            self.data = json.load(f)
 
-    alert_count = 0
-    for record in data_stream:
-        if record["reading"] > 85.0:
-            alert_count += 1
+    def save(self) -> None:
+        """Saves current state directly to the JSON file."""
+        with open(self.db_path, "w", encoding="utf-8") as f:
+            json.dump(self.data, f, indent=4)
 
-    print(f"Processed {total_records:,} items. Flagged {alert_count} alerts.")
+    @contextmanager
+    def transaction(self):
+        """Creates a temporary backup. Rolls back if any error occurs."""
+        backup_path = self.db_path.with_suffix(".bak")
+        shutil.copyfile(self.db_path, backup_path) 
+        print("\n[Transaction Started] Backup created.")
+        try:
+            yield  
+            self.save() 
+            backup_path.unlink() 
+            print("[Transaction Committed] Changes saved permanently.")
+        except Exception as e:
+            print(f"[Transaction Failed] Error: {e}. Rolling back...")
+            shutil.copyfile(backup_path, self.db_path)
+            backup_path.unlink()
+            self.load() 
+            raise TransactionError("Database rolled back to original state.") from e
 
 
 if __name__ == "__main__":
-    process_data_stream(2_000_000)
+    my_db_file = Path("user_store.json")
+    registry = UserRegistry(db_path=my_db_file)
+
+    with registry.transaction():
+        registry.data["user_001"] = {"name": "Alice", "role": "Admin"}
+        registry.data["user_002"] = {"name": "Bob", "role": "User"}
+
+    print(f"Current DB State: {registry.data}")
+
+    try:
+        with registry.transaction():
+            registry.data["user_003"] = {"name": "Charlie", "role": "Guest"}
+            print("⚡ Simulating a sudden failure/crash mid-write...")
+            raise KeyError("Simulated bad data payload structural error.")
+    except TransactionError as e:
+        print(f"Application Alert: {e}")
+
+    print(f"Final Verified DB State: {registry.data}")
+
+    if my_db_file.exists():
+        my_db_file.unlink()
