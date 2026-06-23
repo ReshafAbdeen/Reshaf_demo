@@ -1,36 +1,57 @@
-import os
-import shutil
-
-TARGET_DIR = "./my_downloads_folder"
-EXT_MAPPING = {
-    "Images": [".jpg", ".jpeg", ".png", ".gif"],
-    "Docs": [".pdf", ".docx", ".txt", ".xlsx"],
-    "Media": [".mp3", ".mp4", ".mkv"],
-}
+import csv
+from datetime import datetime
+from pathlib import Path
+from typing import Generator, Dict, Any
 
 
-def organize_folder(directory):
-    if not os.path.exists(directory):
-        print("Directory does not exist.")
-        return
+def stream_large_csv(file_path: Path) -> Generator[Dict[str, Any], None, None]:
+    """Generator that yields rows one by one to save memory."""
+    if not file_path.exists():
+        raise FileNotFoundError(f"Target file missing: {file_path}")
 
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
+    with open(file_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            yield row
 
-        # Skip if it's a directory
-        if os.path.isdir(file_path):
+
+def clean_and_validate(row: Dict[str, str]) -> Dict[str, Any]:
+    """Parses types, cleans strings, and handles malformed data."""
+    try:
+        return {
+            "transaction_id": int(row["id"].strip()),
+            "amount": float(row["amount"].replace("$", "").strip()),
+            "date": datetime.strptime(row["date"].strip(), "%Y-%m-%d").date(),
+            "status": row["status"].upper().strip(),
+        }
+    except (ValueError, KeyError) as e:
+        return {"transaction_id": None, "error": f"Data corruption: {e}"}
+
+
+def main():
+    data_file = Path("./transactions.csv")
+    
+    if not data_file.exists():
+        data_file.write_text("id,amount,date,status\n1, $150.50, 2026-06-01, pending\n2, bad_data, 2026-06-02, paid\n3, $99.00, 2026-06-03, paid\n")
+
+    total_revenue = 0.0
+    corrupted_count = 0
+
+    print("Processing stream...")
+    for raw_row in stream_large_csv(data_file):
+        processed = clean_and_validate(raw_row)
+        
+        if processed.get("error"):
+            corrupted_count += 1
             continue
+            
+        if processed["status"] == "PAID":
+            total_revenue += processed["amount"]
 
-        _, ext = os.path.splitext(filename)
-        for folder_name, extensions in EXT_MAPPING.items():
-            if ext.lower() in extensions:
-                dest_folder = os.path.join(directory, folder_name)
-                os.makedirs(dest_folder, exist_ok=True)
-                shutil.move(file_path, os.path.join(dest_folder, filename))
-                print(f"Moved: {filename} -> {folder_name}/")
-                break
+    print(f"\n--- Processing Summary ---")
+    print(f"Total Valid Revenue: ${total_revenue:.2f}")
+    print(f"Skipped Corrupted Rows: {corrupted_count}")
 
 
 if __name__ == "__main__":
-    os.makedirs(TARGET_DIR, exist_ok=True)
-    organize_folder(TARGET_DIR)
+    main()
