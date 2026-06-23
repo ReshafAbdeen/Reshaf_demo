@@ -1,33 +1,49 @@
+import concurrent.futures
+import logging
 import requests
-from bs4 import BeautifulSoup
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - [%(levelname)s] - %(message)s"
+)
+
+URLS = [
+    "https://www.google.com",
+    "https://www.github.com",
+    "https://httpbin.org/delay/2",  
+    "https://thisisadeadsite12345.com",  
+    "https://httpbin.org/status/404",  
+]
 
 
-class QuoteScraper:
+def check_website(url: str, timeout: int = 5) -> dict:
+    """Fetches a URL and returns its status or error details."""
+    try:
+        response = requests.get(url, timeout=timeout)
+        response.raise_for_status()
+        return {"url": url, "status": response.status_code, "error": None}
+    except requests.exceptions.HTTPError as http_err:
+        return {"url": url, "status": response.status_code, "error": f"HTTP Error: {http_err}"}
+    except requests.exceptions.RequestException as req_err:
+        return {"url": url, "status": None, "error": f"Connection Error: {req_err}"}
 
-    def __init__(self):
-        self.url = "https://quotes.toscrape.com/"
 
-    def fetch_quotes(self):
-        response = requests.get(self.url)
-        if response.status_code != 200:
-            return "Failed to retrieve website."
+def main():
+    logging.info("Starting website status checker...")
+    results = []
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        quote_elements = soup.find_all("div", class_="quote")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_url = {executor.submit(check_website, url): url for url in URLS}
 
-        scraped_data = []
-        for element in quote_elements:
-            text = element.find("span", class_="text").text
-            author = element.find("small", class_="author").text
-            scraped_data.append({"quote": text, "author": author})
+        for future in concurrent.futures.as_completed(future_to_url):
+            data = future.result()
+            results.append(data)
+            if data["error"]:
+                logging.warning(f"Failure: {data['url']} -> {data['error']}")
+            else:
+                logging.info(f"Success: {data['url']} -> Status {data['status']}")
 
-        return scraped_data
+    print(f"\n--- Processed {len(results)} sites ---")
 
 
 if __name__ == "__main__":
-    scraper = QuoteScraper()
-    results = scraper.fetch_quotes()
-
-    print(f"--- Scraped {len(results)} Quotes ---")
-    for item in results[:5]:
-        print(f"\"{item['quote']}\" - By: {item['author']}\n")
+    main()
