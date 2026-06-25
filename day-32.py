@@ -1,12 +1,13 @@
-import requests
-from bs4 import BeautifulSoup
+import sys
+import time
 
-url = "https://www.bbc.com/news"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, "html.parser")
+seconds = 10
+print("--- Countdown Timer ---")
 
-headlines = [h.text.strip() for h in soup.find_all("h2") if h.text]
+while seconds > 0:
+    sys.stdout.write(f"\rTime remaining: {seconds} seconds")
+    sys.stdout.flush()
+    time.sleep(1)
+    seconds -= 1
 
-print("--- Top BBC News Headlines ---")
-for i, headline in enumerate(headlines[:5], 1):
-    print(f"{i}. {headline}")
+print("\rTime's up! Complete.       ")
