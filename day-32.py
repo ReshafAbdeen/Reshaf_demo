@@ -1,13 +1,13 @@
-import sys
-import time
+import qrcode
 
-seconds = 10
-print("--- Countdown Timer ---")
+data = "https://www.python.org"
+filename = "python_qr.png"
 
-while seconds > 0:
-    sys.stdout.write(f"\rTime remaining: {seconds} seconds")
-    sys.stdout.flush()
-    time.sleep(1)
-    seconds -= 1
+print("--- QR Code Generator ---")
+qr = qrcode.QRCode(version=1, box_size=10, border=5)
+qr.add_data(data)
+qr.make(fit=True)
 
-print("\rTime's up! Complete.       ")
+img = qr.make_image(fill_color="black", back_color="white")
+img.save(filename)
+print(f"Success! Saved QR code to {filename}")
