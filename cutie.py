@@ -1,12 +1,11 @@
-import random
-import string
+from gtts import gTTS
 
-length = 12
-chars = string.ascii_letters + string.digits + string.punctuation
-password = [random.choice(chars) for _ in range(length)]
+text_to_speak = "Hello! This audio was generated using ten lines of Python code."
+language = "en"
+filename = "speech.mp3"
 
-random.shuffle(password)
-final_password = "".join(password)
+print("--- Text-to-Speech Converter ---")
+tts = gTTS(text=text_to_speak, lang=language, slow=False)
+tts.save(filename)
 
-print("--- Secure Password Generator ---")
-print(f"Your new password is: {final_password}")
+print(f"Success! Audio saved as '{filename}'")
