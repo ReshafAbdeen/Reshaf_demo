@@ -1,0 +1,12 @@
+[
+    {
+        "title": "Learn Python OOP",
+        "description": "Understand classes, objects, and methods.",
+        "is_completed": true
+    },
+    {
+        "title": "Build a web app",
+        "description": "Use Flask or Django to make a backend.",
+        "is_completed": false
+    }
+]

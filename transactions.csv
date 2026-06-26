@@ -1,0 +1,4 @@
+id,amount,date,status
+1, $150.50, 2026-06-01, pending
+2, bad_data, 2026-06-02, paid
+3, $99.00, 2026-06-03, paid
