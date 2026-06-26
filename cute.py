@@ -1,13 +1,12 @@
-import requests
+import datetime
+import shutil
 
-amount_usd = 100
-url = "https://open.er-api.com/v6/latest/USD"
-data = requests.get(url).json()
+folder_to_backup = "./my_project"
+backup_name = f"backup_{datetime.date.today()}"
 
-if data["result"] == "success":
-    rate = data["rates"]["EUR"]
-    amount_eur = amount_usd * rate
-    print(f"--- Currency Converter ---")
-    print(f"${amount_usd} USD = {amount_eur:.2f} EUR (Rate: {rate:.4f})")
-else:
-    print("Error fetching exchange rates.")
+try:
+    shutil.make_archive(backup_name, "zip", folder_to_backup)
+    print("--- Backup Successful ---")
+    print(f"Created: {backup_name}.zip")
+except Exception as e:
+    print(f"Backup failed: {e}")
