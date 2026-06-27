@@ -1,12 +1,13 @@
-import datetime
-import shutil
+import http.server
+import socketserver
 
-folder_to_backup = "./my_project"
-backup_name = f"backup_{datetime.date.today()}"
+PORT = 8000
+Handler = http.server.SimpleHTTPRequestHandler
 
-try:
-    shutil.make_archive(backup_name, "zip", folder_to_backup)
-    print("--- Backup Successful ---")
-    print(f"Created: {backup_name}.zip")
-except Exception as e:
-    print(f"Backup failed: {e}")
+print(f"--- Local Web Server ---")
+print(f"Serving at: http://localhost:{PORT}")
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nServer stopped.")
