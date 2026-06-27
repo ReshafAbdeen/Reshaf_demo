@@ -1,13 +1,13 @@
-import qrcode
+import os
+import time
+import psutil
 
-data = "https://www.python.org"
-filename = "python_qr.png"
-
-print("--- QR Code Generator ---")
-qr = qrcode.QRCode(version=1, box_size=10, border=5)
-qr.add_data(data)
-qr.make(fit=True)
-
-img = qr.make_image(fill_color="black", back_color="white")
-img.save(filename)
-print(f"Success! Saved QR code to {filename}")
+print("--- System Performance Monitor ---")
+try:
+    while True:
+        cpu = psutil.cpu_percent(interval=None)
+        ram = psutil.virtual_memory().percent
+        print(f"CPU Usage: {cpu}% | RAM Usage: {ram}%", end="\r")
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("\nMonitoring stopped.                      ")
