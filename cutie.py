@@ -1,19 +1,16 @@
-class ShoppingCart:
-    def __init__(self):
-        self.items = []
+print("--- Student Grading System ---")
+student_name = input("Enter Student Name: ")
+subjects = ["Maths", "Science", "English"]
+marks = []
 
-    def add_item(self, product: Product, quantity: int = 1):
-        if product.purchase(quantity):
-            self.items.append((product, quantity))
-            print(f"Added {quantity}x {product.name} to cart.")
+for sub in subjects:
+    score = float(input(f"Enter marks for {sub} (out of 100): "))
+    marks.append(score)
 
-    def calculate_total(self, tax_rate: float = 0.08) -> float:
-        subtotal = sum(prod.price * qty for prod, qty in self.items)
-        total = subtotal * (1 + tax_rate)
-        return round(total, 2)
+total_marks = sum(marks)
+percentage = (total_marks / (len(subjects) * 100)) * 100
+grade = "A" if percentage >= 80 else "B" if percentage >= 60 else "C" if percentage >= 40 else "Fail"
 
-# --- Using the new classes ---
-cart = ShoppingCart()
-cart.add_item(laptop, 1)
-cart.add_item(ebook, 1)
-print(f"Total Cart Price (with tax): ${cart.calculate_total()}")
+print(f"\n--- Result for {student_name} ---")
+print(f"Total Marks: {total_marks} / 300 | Percentage: {percentage:.2f}%")
+print(f"Final Grade: {grade}")
