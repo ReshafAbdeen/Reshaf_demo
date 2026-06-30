@@ -1,16 +1,16 @@
-print("--- Student Grading System ---")
-student_name = input("Enter Student Name: ")
-subjects = ["Maths", "Science", "English"]
-marks = []
+from dataclasses import dataclass, field
+import json
 
-for sub in subjects:
-    score = float(input(f"Enter marks for {sub} (out of 100): "))
-    marks.append(score)
+@dataclass
+class Product:
+    name: str
+    price: float
+    tags: list[str] = field(default_factory=list)
 
-total_marks = sum(marks)
-percentage = (total_marks / (len(subjects) * 100)) * 100
-grade = "A" if percentage >= 80 else "B" if percentage >= 60 else "C" if percentage >= 40 else "Fail"
+    def get_discounted_price(self, discount_percent: float) -> float:
+        return round(self.price * (1 - discount_percent / 100), 2)
 
-print(f"\n--- Result for {student_name} ---")
-print(f"Total Marks: {total_marks} / 300 | Percentage: {percentage:.2f}%")
-print(f"Final Grade: {grade}")
+item = Product(name="Wireless Mouse", price=49.99, tags=["electronics", "tech"])
+json_data = json.dumps(item.__dict__, indent=2)
+
+print(f"Serialized Product:\n{json_data}")
