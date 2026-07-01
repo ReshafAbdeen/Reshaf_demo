@@ -1,16 +1,16 @@
-from collections import Counter
-import re
+class FibonacciIterator:
+    def __init__(self, limit: int):
+        self.limit = limit
+        self.a, self.b = 0, 1
 
-log_data = "INFO: User logged in\nERROR: Connection failed\nINFO: Page loaded\nERROR: Timeout"
+    def __iter__(self):
+        return self
 
-try:
-    errors = (line for line in log_data.split("\n") if "ERROR" in line)
+    def __next__(self) -> int:
+        if self.a > self.limit:
+            raise StopIteration  
+        current = self.a
+        self.a, self.b = self.b, self.a + self.b
+        return current
 
-    words = re.findall(r"\w+", " ".join(errors).lower())
-
-    word_counts = Counter(words)
-
-    print(f"Top Error Keywords: {word_counts.most_common(2)}")
-
-except Exception as e:
-    print(f"An error occurred during processing: {e}")
+print(f"Fibonacci up to 50: {[num for num in FibonacciIterator(50)]}")
