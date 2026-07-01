@@ -1,14 +1,18 @@
-import asyncio
-import random
+import time
+from functools import lru_cache
 
-async def fetch_api_data(endpoint_id: int) -> dict:
-    print(f"Starting request to API #{endpoint_id}...")
-    await asyncio.sleep(random.uniform(0.5, 1.5))
-    return {"endpoint": endpoint_id, "status": "Success", "data": random.randint(100, 999)}
+def timer_decorator(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)  # Execute the actual function
+        print(f"[{func.__name__}] Execution time: {time.perf_counter() - start_time:.6f}s")
+        return result
+    return wrapper
 
-async def main():
-    tasks = [fetch_api_data(i) for i in range(1, 4)]
-    results = await asyncio.gather(*tasks)
-    print(f"\nAll data retrieved successfully:\n{results}")
+@timer_decorator
+@lru_cache(maxsize=32)
+def compute_heavy_math(n: int) -> int:
+    return sum(i * i for i in range(n))
 
-asyncio.run(main())
+run1 = compute_heavy_math(5_000_000)
+run2 = compute_heavy_math(5_000_000)  
