@@ -1,33 +1,30 @@
-import pandas as pd
-import numpy as np
+#The Fitness Gym Club Analytics
 
-print("\033[1m" + "=== Advanced Pandas Multi-Table Joiner ===" + "\033[0m\n")
+import pandas as pd 
+import numpy as np 
 
-student_info = {
-    'Student': ['Zaynul', 'Rahul', 'Amit', 'Sana'],
-    'Course': ['BCA', 'B.Tech', 'MCA', 'B.Tech'],
-    'City': ["Bareilly",'Delhi', 'Lucknow', 'Bareilly']
+print("\033[1m" + "=== Bareilly Gym Center Advanced Analytics ===" + "\033[0m\n")
+
+gym_data = {
+    "Member": ["Zaynul", "Rahul", "Amit", "Sana", "Zaynul", "Rahul", "Amit", "Sana"],
+    "Month": ["May", "May", "May", "May", "June", "June", "June", "June"],
+    "Workout_Type": ["Weightlifting", "Cardio", "Weightlifting", "Cardio", "Weightlifting", "Cardio", "Cardio", "Weightlifting"],
+    "Attendance_Days": [24, 12, 8, 22, 26, None, 18, 20],
+    "Fees_Paid": [2000, 1500, 2000, 1500, 2200, 1500, 1500, 2000]
 }
 
-student_df = pd.DataFrame(student_info)
-
-center_info = {
-    'Course':['BCA', 'B.Tech', 'MCA', 'B.Tech'],
-    'City':['Bareilly', 'Delhi', 'Lucknow', 'Lucknow'],
-    'Center_Name': ['Berilly Tech college', 'Delhi IIT Campus', "Lucknow Universty", 'Bombay IIT']
-}
-
-center_df = pd.DataFrame(center_info)
-
-print("\n===Student Table===")
-print(student_df)
-
-print("\n===Center Table===")
-print(center_df)
+df = pd.DataFrame(gym_data)
+print("===Raw Gym Data Recieved===")
+print(df)
 
 
-final_df = pd.merge(student_df , center_df , on=['Course' ,'City'], how='left')
-final_df['Center_Name'] = final_df['Center_Name'].fillna('Bareilly College')
-print("\n===Merging ke baad Alloted Center Table")
-print(final_df)
+df['Attendance_Days'] = df['Attendance_Days'].fillna(df["Attendance_Days"].mean())
+gym_pivot = df.pivot_table(
+    values = "Fees_Paid",
+    index = 'Month',
+    columns = 'Workout_Type',
+    aggfunc = 'mean'
+)
 
+print("\n===Report Pivot : Month & Workout Wise Total Revenue===")
+print(gym_pivot)
