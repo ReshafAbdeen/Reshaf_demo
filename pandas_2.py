@@ -1,30 +1,21 @@
-#The Fitness Gym Club Analytics
+import pandas as pd
+import numpy as np
 
-import pandas as pd 
-import numpy as np 
-
-print("\033[1m" + "=== Bareilly Gym Center Advanced Analytics ===" + "\033[0m\n")
-
-gym_data = {
-    "Member": ["Zaynul", "Rahul", "Amit", "Sana", "Zaynul", "Rahul", "Amit", "Sana"],
-    "Month": ["May", "May", "May", "May", "June", "June", "June", "June"],
-    "Workout_Type": ["Weightlifting", "Cardio", "Weightlifting", "Cardio", "Weightlifting", "Cardio", "Cardio", "Weightlifting"],
-    "Attendance_Days": [24, 12, 8, 22, 26, None, 18, 20],
-    "Fees_Paid": [2000, 1500, 2000, 1500, 2200, 1500, 1500, 2000]
+# 1. Fake Sales Data create karna (Data Generation)
+data = {
+    'Product': ['Laptop', 'Mobile', 'Tablet', 'Laptop', 'Mobile', 'Tablet', 'Laptop', 'Mobile'],
+    'Units_Sold': [10, 15, np.nan, 12, 8, 5, np.nan, 20],  # Kuch missing values dalen
+    'Price_Per_Unit': [1000, 500, 300, 1000, 500, 300, 1000, 500],
+    'Region': ['North', 'South', 'East', 'West', 'North', 'South', 'East', 'West']
 }
+df = pd.DataFrame(data)
 
-df = pd.DataFrame(gym_data)
-print("===Raw Gym Data Recieved===")
-print(df)
+df['Units_Sold'] = df['Units_Sold'].fillna(0)
 
+df['Total_Revenue'] = df['Units_Sold'] * df['Price_Per_Unit']
 
-df['Attendance_Days'] = df['Attendance_Days'].fillna(df["Attendance_Days"].mean())
-gym_pivot = df.pivot_table(
-    values = "Fees_Paid",
-    index = 'Month',
-    columns = 'Workout_Type',
-    aggfunc = 'mean'
-)
+summary_df = df.groupby('Product').agg({'Units_Sold': 'sum', 'Total_Revenue': 'sum'}).reset_index()
 
-print("\n===Report Pivot : Month & Workout Wise Total Revenue===")
-print(gym_pivot)
+summary_df.to_csv('product_sales_summary.csv', index=False)
+print("--- Sales Summary Report ---")
+print(summary_df)
