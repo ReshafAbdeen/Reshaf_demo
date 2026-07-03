@@ -1,16 +1,26 @@
-from dataclasses import dataclass, field
-import json
+def todo_app():
+    tasks = []
+    print("Welcome to Your Personal To-Do List!")
 
-@dataclass
-class Product:
-    name: str
-    price: float
-    tags: list[str] = field(default_factory=list)
+    while True:
+        print("\n1. Add Task | 2. Show Tasks | 3. Exit")
+        choice = input("Option select karein (1/2/3): ").strip()
 
-    def get_discounted_price(self, discount_percent: float) -> float:
-        return round(self.price * (1 - discount_percent / 100), 2)
+        if choice == '1':
+            task = input("Kaam (Task) ka naam likhein: ")
+            tasks.append(task)
+            print(f"'{task}' list me add ho gaya hai!")
+        elif choice == '2':
+            if not tasks:
+                print("Aapki list abhi khali hai!")
+            else:
+                print("\n--- Aapki To-Do List ---")
+                for index, item in enumerate(tasks, 1):
+                    print(f"{index}. {item}")
+        elif choice == '3':
+            print("Bye! Apna khayal rakhein.")
+            break
+        else:
+            print("Invalid option! Sahi number chunein.")
 
-item = Product(name="Wireless Mouse", price=49.99, tags=["electronics", "tech"])
-json_data = json.dumps(item.__dict__, indent=2)
-
-print(f"Serialized Product:\n{json_data}")
+todo_app()
