@@ -1,16 +1,22 @@
-class FibonacciIterator:
-    def __init__(self, limit: int):
-        self.limit = limit
-        self.a, self.b = 0, 1
+import random
 
-    def __iter__(self):
-        return self
+def guess_the_number():
+    secret_number = random.randint(1, 20)
+    attempts = 0
+    print("Maine 1 se 20 ke beech ek number socha hai. Guess karo!")
 
-    def __next__(self) -> int:
-        if self.a > self.limit:
-            raise StopIteration  
-        current = self.a
-        self.a, self.b = self.b, self.a + self.b
-        return current
+    while attempts < 5:
+        guess = int(input("Apna guess dalo: "))
+        attempts += 1
 
-print(f"Fibonacci up to 50: {[num for num in FibonacciIterator(50)]}")
+        if guess < secret_number:
+            print("Too low! Thoda bada number try karo.")
+        elif guess > secret_number:
+            print("Too high! Thoda chota number try karo.")
+        else:
+            print(f"Waah! Aapne {attempts} attempts me sahi guess kiya!")
+            return
+
+    print(f"Game Over! Sahi number {secret_number} tha.")
+
+guess_the_number()
