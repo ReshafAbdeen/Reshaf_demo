@@ -1,22 +1,26 @@
-import random
+#Crypto Trend Analyzer
 
-def guess_the_number():
-    secret_number = random.randint(1, 20)
-    attempts = 0
-    print("Maine 1 se 20 ke beech ek number socha hai. Guess karo!")
+import pandas as pd
 
-    while attempts < 5:
-        guess = int(input("Apna guess dalo: "))
-        attempts += 1
+print("\033[1m" + "=== Crypto Time Series Analyzer ===" + "\033[0m\n")
 
-        if guess < secret_number:
-            print("Too low! Thoda bada number try karo.")
-        elif guess > secret_number:
-            print("Too high! Thoda chota number try karo.")
-        else:
-            print(f"Waah! Aapne {attempts} attempts me sahi guess kiya!")
-            return
+market_data = {
+    "Date": ["2026-07-01", "2026-07-02", "2026-07-03", "2026-07-04", "2026-07-05", "2026-07-06"],
+    "Coin": ["Bitcoin", "Bitcoin", "Bitcoin", "Ethereum", "Ethereum", "Ethereum"],
+    "Price_USD": [60500, 62000, 59000, 3100, 3250, 3050]
+}
 
-    print(f"Game Over! Sahi number {secret_number} tha.")
+df = pd.DataFrame(market_data)
+print("--- Raw Data (Date is Text) ---")
+print(df)
+print("\n---Datatype of Data Column :" , type(df['Date'][0]))
 
-guess_the_number()
+
+df['Date'] = pd.to_datetime(df['Date'])
+
+df['Day'] = df['Date'].dt.day
+df['Month'] = df['Date'].dt.month_name()
+df['Weekday'] = df['Date'].dt.day_name()
+
+print("\n==Smart Datetime Feature Extract Karne ke Baad==")
+print(df)
