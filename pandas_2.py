@@ -1,21 +1,30 @@
+#The Range Splitter
+
 import pandas as pd
 import numpy as np
 
-# 1. Fake Sales Data create karna (Data Generation)
-data = {
-    'Product': ['Laptop', 'Mobile', 'Tablet', 'Laptop', 'Mobile', 'Tablet', 'Laptop', 'Mobile'],
-    'Units_Sold': [10, 15, np.nan, 12, 8, 5, np.nan, 20],  # Kuch missing values dalen
-    'Price_Per_Unit': [1000, 500, 300, 1000, 500, 300, 1000, 500],
-    'Region': ['North', 'South', 'East', 'West', 'North', 'South', 'East', 'West']
+gym_data = {
+    'Member':['Zaynul', 'Rahul', 'Sana', "Ankit", 'Vikram', 'Sohil'], 
+    'Max_Lift_kg':[140, 40, 65, 130, 95, 35]
 }
-df = pd.DataFrame(data)
 
-df['Units_Sold'] = df['Units_Sold'].fillna(0)
+df = pd.DataFrame(gym_data)
+print("\033[1m" + "==Original Table=="+ "\033[0m\n")
+print(df)
 
-df['Total_Revenue'] = df['Units_Sold'] * df['Price_Per_Unit']
 
-summary_df = df.groupby('Product').agg({'Units_Sold': 'sum', 'Total_Revenue': 'sum'}).reset_index()
+Weight_bins = [0, 50, 100, 200]
+group_lables = ['Light Weight', 'Medium Weight', 'Heavy Weight']
 
-summary_df.to_csv('product_sales_summary.csv', index=False)
-print("--- Sales Summary Report ---")
-print(summary_df)
+df['Weight_Category'] = pd.cut(df['Max_Lift_kg'], bins=Weight_bins, labels=group_lables)
+
+Diet_setup = {
+    'Light Weight' : "Protien & Carbs",
+    'Medium Weight': "Balance Diet",
+    'Heavy Weight': "High Protien & Diet"
+}
+
+df['Asigned_Diet'] = df['Weight_Category'].map(Diet_setup)
+
+print("\033[1m" + "===Data Bining & Mapping ke baad Report===" + "\033[0m\n")
+print(df)
