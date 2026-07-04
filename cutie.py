@@ -1,26 +1,25 @@
-def todo_app():
-    tasks = []
-    print("Welcome to Your Personal To-Do List!")
+#Min-Max Scaling & Filtering
 
-    while True:
-        print("\n1. Add Task | 2. Show Tasks | 3. Exit")
-        choice = input("Option select karein (1/2/3): ").strip()
+import pandas as pd
+import numpy as np
+print("\033[1m"+ "===Advanced Numpy Math inside Pandas===" +"033[0m\n")
 
-        if choice == '1':
-            task = input("Kaam (Task) ka naam likhein: ")
-            tasks.append(task)
-            print(f"'{task}' list me add ho gaya hai!")
-        elif choice == '2':
-            if not tasks:
-                print("Aapki list abhi khali hai!")
-            else:
-                print("\n--- Aapki To-Do List ---")
-                for index, item in enumerate(tasks, 1):
-                    print(f"{index}. {item}")
-        elif choice == '3':
-            print("Bye! Apna khayal rakhein.")
-            break
-        else:
-            print("Invalid option! Sahi number chunein.")
+gym_stats = {
+    'Member':['Zaynul', 'Rahul', 'Amit', 'Sana', 'Vikram', 'Sohil'],
+    "Max_Lift_Kg":[140, 40, 65, 150, 70, 35]
+}
+df = pd.DataFrame(gym_stats)
+print("===Original Table===")
+print(df)
 
-todo_app()
+min_val = df['Max_Lift_Kg'].min()
+max_val = df['Max_Lift_Kg'].max()
+
+df['Performance_Score'] = (df['Max_Lift_Kg']- min_val) / (max_val - min_val)
+
+cutoff = np.percentile(df['Max_Lift_Kg'], 70)
+
+df['Elite_Status'] = np.where(df['Max_Lift_Kg'] >= cutoff, "Heavy Lister", "Regular")
+
+print("\033[1m" + "===Numpy Scaling & Precentile Ke Baad Data==="+ "\033[0m\n")
+print(df)
