@@ -1,25 +1,28 @@
-#Min-Max Scaling & Filtering
-
 import pandas as pd
 import numpy as np
-print("\033[1m"+ "===Advanced Numpy Math inside Pandas===" +"033[0m\n")
 
-gym_stats = {
-    'Member':['Zaynul', 'Rahul', 'Amit', 'Sana', 'Vikram', 'Sohil'],
-    "Max_Lift_Kg":[140, 40, 65, 150, 70, 35]
-}
-df = pd.DataFrame(gym_stats)
-print("===Original Table===")
-print(df)
+customers = pd.DataFrame({
+    'CustomerID': [101, 102, 103, 104],
+    'Region': ['North', 'South', 'East', 'West']
+})
 
-min_val = df['Max_Lift_Kg'].min()
-max_val = df['Max_Lift_Kg'].max()
+sales = pd.DataFrame({
+    'OrderID': [1, 2, 3, 4, 5],
+    'CustomerID': [101, 102, 101, 104, 105], 
+    'Amount': [250.0, 150.0, 300.0, np.nan, 400.0], 
+    'Category': ['Tech', 'Apparel', 'Tech', 'Books', 'Toys']
+})
 
-df['Performance_Score'] = (df['Max_Lift_Kg']- min_val) / (max_val - min_val)
+df = pd.merge(sales, customers, on='CustomerID', how='left')
 
-cutoff = np.percentile(df['Max_Lift_Kg'], 70)
+avg_sale = df['Amount'].mean()
+df['Amount'] = df['Amount'].fillna(avg_sale)
 
-df['Elite_Status'] = np.where(df['Max_Lift_Kg'] >= cutoff, "Heavy Lister", "Regular")
+df['Region'] = df['Region'].fillna('Unknown')
 
-print("\033[1m" + "===Numpy Scaling & Precentile Ke Baad Data==="+ "\033[0m\n")
-print(df)
+pivot_summary = pd.pivot_table(
+    df, values='Amount', index='Region', columns='Category', 
+    aggfunc='sum', fill_value=0
+)
+
+print(pivot_summary)
