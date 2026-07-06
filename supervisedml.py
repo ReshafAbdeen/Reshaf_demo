@@ -1,12 +1,11 @@
 #Machine Learning
-
-from sklearn.linear_model import LinearRegression
 import pandas as pd
-import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 data = {
-    'Experience':[1, 2, 3, 4, 5],
-    'Salary':[15, 20, 25, 30, 55]
+    'Experience':[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'Salary':[15, 20, 25, 30, 55, 60, 65, 70, 75, 80]
 }
 
 df = pd.DataFrame(data)
@@ -14,12 +13,17 @@ df = pd.DataFrame(data)
 X = df[['Experience']]
 y = df['Salary']
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+print(f"Total Points : {len(X)}")
+print(f"Training ke liye gye Points : {len(X_train)}")
+print(f"Test ke liye bache Points : {len(X_test)}")
+
 model = LinearRegression()
-model.fit(X, y)
-print("Model Train ho Gya hai")
+model.fit(X_train, y_train)
 
-new_data = pd.DataFrame({"Experience":[6, 8]})
-predicted_salaries = model.predict(new_data)
+predicted_salaries = model.predict(X_test)
 
-print(f"6 saal ke experience wale ki predicted salary: {predicted_salaries[0]:.2f}k")
-print(f"8 saal ke experience wale ki predicted salary: {predicted_salaries[1]:.2f}k")
+print("--- EXAM RESULTS ---")
+print(f"Asli Salaries (Test Data): {y_test.values}")
+print(f"Model ki Prediction:      {[round(float(num), 2) for num in predicted_salaries]}")
