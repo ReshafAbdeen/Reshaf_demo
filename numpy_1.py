@@ -1,41 +1,29 @@
+#The AI Matrix Engine
+
 import numpy as np
-arr = np.array([ 9, 10, 11, 12, 13, 14])
-print(arr)
-matrix = np.array([
-    [1,2,3],
-    [4,5,6],
-    [7,8,9]
-])
- 
-new_row = np.array([1, 4, -5])
 
-result = matrix + new_row
-print(result)
+print("\033[1m" + "=== High-Level NumPy: The AI Matrix Engine ===" + "\033[0m\n")
 
+inputs = np.array([25, 10, 120]) 
 
-rand_decimal = np.random.rand(5)
-print(rand_decimal)
+weights = np.array([1.5, 0.8, 0.2]) 
+final_ai_score = np.dot(inputs, weights)
 
-rand_matrix = np.random.randint(10 , 50 , size = (6,4))
-print(rand_matrix)
+print("--- Neural Net Calculation ---")
+print(f"Player Inputs: {inputs}")
+print(f"AI Weights: {weights}")
+print(f"\033[1mFinal AI Combat Score: {final_ai_score}\033[0m")
 
 
-game = np.array(["Valorant", "PUBG", "GTA V", "Python Game", "Minecraft"])
-lucky_game = np.random.choice(game)
+squad_scores = np.array([
+    [200, 150, 300],  # 
+    [180, 220, 250]   
+]) 
 
-print(f"Aaj laptop kiya chalega dekhte hai Lucky Game : {lucky_game}")
+bonus = np.array([50, 50, 50])
 
+updated_scores = squad_scores + bonus 
 
-
-#numpy practice
-
-a = np.array([1,3,6,4])
-b = np.array([5,3,6,2])
-
-result_loop = []
-
-for i in range(len(a)):
-    result_loop.append(a[i]* b[i])
-
-result_numpy = a * b
-print("Vectorized ka result :", result_numpy)
+print("\n--- Broadcasting Magic (Bonus Added without Loops!) ---")
+print("Original Scores:\n", squad_scores)
+print("Updated Scores with Bonus:\n", updated_scores)
