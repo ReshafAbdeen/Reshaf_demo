@@ -1,24 +1,31 @@
-class AImodel:
-    def __init__(self, model_name, accuracy):
-        self.name = model_name
-        self.accuracy = accuracy
+#Password Generator & Validator
 
-    def show_detail(self):
-        print(f"Model ka Name {self.name}")
-        print(f"Model ki accuracy {self.accuracy}")
+import random
+import string
+import re
 
-    def predict(self, data):
-        print(f"{self.name} is predicting result for {data}")
+def generate_password(length=12):
+    chars = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(chars) for _ in range(length))
 
+def validate_password(password):
+    if len(password) < 8:
+        return False, "Password too short."
+    if not re.search(r"[a-z]", password):
+        return False, "Needs lowercase letter."
+    if not re.search(r"[A-Z]", password):
+        return False, "Needs uppercase letter."
+    if not re.search(r"[0-9]", password):
+        return False, "Needs number."
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False, "Needs special character."
+    return True, "Strong password!"
 
-model1 = AImodel("Zomato_Rzter", 93.4)
-model2 = AImodel("Desi_chatgpt", 94.3)
-
-print("\n---Model1 Testing---")
-model1.show_detail()
-model1.predict("Zomato resturant ka data")
-
-
-print("\n---Model2 Testing---")
-model2.show_detail()
-model2.predict("Bhai python oops kiya hota hai")
+if __name__ == "__main__":
+    print("--- Password Tool ---")
+    new_pass = generate_password(14)
+    print(f"Generated Password: {new_pass}")
+    
+    test_pass = input("Enter a password to validate: ")
+    is_valid, message = validate_password(test_pass)
+    print(f"Result: {message}")
