@@ -1,28 +1,33 @@
-import pandas as pd
-import numpy as np
+#Command-Line To-Do List
 
-customers = pd.DataFrame({
-    'CustomerID': [101, 102, 103, 104],
-    'Region': ['North', 'South', 'East', 'West']
-})
+def display_tasks(tasks):
+    print("\n--- To-Do List ---")
+    if not tasks:
+        print("List is currently empty.")
+    for i, t in enumerate(tasks, 1):
+        status = "[x]" if t['done'] else "[ ]"
+        print(f"{i}. {status} {t['name']}")
 
-sales = pd.DataFrame({
-    'OrderID': [1, 2, 3, 4, 5],
-    'CustomerID': [101, 102, 101, 104, 105], 
-    'Amount': [250.0, 150.0, 300.0, np.nan, 400.0], 
-    'Category': ['Tech', 'Apparel', 'Tech', 'Books', 'Toys']
-})
+def main():
+    tasks = []
+    while True:
+        display_tasks(tasks)
+        print("\n1. Add Task  2. Mark Done  3. Quit")
+        choice = input("Choice: ")
+        
+        if choice == '1':
+            tasks.append({"name": input("Task: "), "done": False})
+        elif choice == '2':
+            try:
+                idx = int(input("Task Number: ")) - 1
+                tasks[idx]['done'] = True
+            except (ValueError, IndexError):
+                print("Invalid task number.")
+        elif choice == '3':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid input.")
 
-df = pd.merge(sales, customers, on='CustomerID', how='left')
-
-avg_sale = df['Amount'].mean()
-df['Amount'] = df['Amount'].fillna(avg_sale)
-
-df['Region'] = df['Region'].fillna('Unknown')
-
-pivot_summary = pd.pivot_table(
-    df, values='Amount', index='Region', columns='Category', 
-    aggfunc='sum', fill_value=0
-)
-
-print(pivot_summary)
+if __name__ == "__main__":
+    main()
