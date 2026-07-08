@@ -1,29 +1,19 @@
-#The AI Matrix Engine
+#Data Smoother
 
-import numpy as np
+import pandas as pd 
 
-print("\033[1m" + "=== High-Level NumPy: The AI Matrix Engine ===" + "\033[0m\n")
+print("\033[1m" + "Advance Pandas : Ping Smoother "+ "\033[0m")
 
-inputs = np.array([25, 10, 120]) 
+data = {
+    "Match_no" : [1, 2, 3, 4, 5, 6, 7, 8],
+    'Raw_Ping_ms': [25, 30, 180, 22, 28, 500, 35, 49]
+}
 
-weights = np.array([1.5, 0.8, 0.2]) 
-final_ai_score = np.dot(inputs, weights)
-
-print("--- Neural Net Calculation ---")
-print(f"Player Inputs: {inputs}")
-print(f"AI Weights: {weights}")
-print(f"\033[1mFinal AI Combat Score: {final_ai_score}\033[0m")
+df = pd.DataFrame(data)
+print("--Raw Data (With Lag Spike)")
+print(df)
 
 
-squad_scores = np.array([
-    [200, 150, 300],  # 
-    [180, 220, 250]   
-]) 
-
-bonus = np.array([50, 50, 50])
-
-updated_scores = squad_scores + bonus 
-
-print("\n--- Broadcasting Magic (Bonus Added without Loops!) ---")
-print("Original Scores:\n", squad_scores)
-print("Updated Scores with Bonus:\n", updated_scores)
+df['Smoother_Ping (3-Match Avg)'] = df['Raw_Ping_ms'].rolling(window=3).mean()
+print("\n---Data After Rolling Average Magic---")
+print(df)
