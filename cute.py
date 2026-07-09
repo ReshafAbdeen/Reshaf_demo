@@ -1,17 +1,32 @@
-import pandas as pd
+# Custom Context Manager (OOP & Magic Methods)import os
 
-# Create a sample dataset of employees
-data = {
-    'Name': ['Amit', 'Priya', 'Rahul', 'Neha', 'Vikram', 'Sneha'],
-    'Department': ['IT', 'HR', 'IT', 'Finance', 'Finance', 'HR'],
-    'Salary': [65000, 52000, 72000, 85000, 48000, 56000],
-    'Experience_Yrs': [3, 2, 5, 8, 1, 4]
-}
+class SafeFileHandler:
+    """Context manager for safely opening files and handling errors."""
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
 
-df = pd.DataFrame(data)
+    def __enter__(self):
+        print(f"Opening file: {self.filename}")
+        self.file = open(self.filename, self.mode)
+        return self.file
 
-experienced = df[df['Experience_Yrs'] > 2]
+    def __exit__(self, exc_type, exc_val, traceback):
+        if self.file:
+            self.file.close()
+            print(f"Closed file: {self.filename}")
+        if exc_type is not None:
+            print(f"An error occurred and was safely caught: {exc_val}")
+        return True 
 
-avg_salary_dept = experienced.groupby('Department')['Salary'].mean()
+if __name__ == "__main__":
+    file_name = "test_log.txt"
+    
+    with SafeFileHandler(file_name, 'w') as f:
+        f.write("Logging some intermediate Python data...\n")
+        print("Data written successfully.")
+        raise ValueError("Oops! A simulated error occurred.")
 
-print(avg_salary_dept.sort_values(ascending=False))
+    if os.path.exists(file_name):
+        os.remove(file_name) #
