@@ -1,28 +1,33 @@
-#Python Loop vs NumPy Vectorization
+# API Data Fetcher & Data Extraction
 
-import numpy as np
-import time
+import urllib.request
+import json
+from urllib.error import URLError, HTTPError
 
-print("\033[1m"+"==Welcome to Numpy Vs Python Loops=="+"\033[0m")
+def fetch_user_data(limit):
+    """Fetches user data from a public API and filters it."""
+    url = f"https://jsonplaceholder.typicode.com/users"
+    
+    try:
+        print(f"Fetching data from API...")
+        with urllib.request.urlopen(url) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                
+                extracted_users = [
+                    {"name": user["name"], "company": user["company"]["name"]}
+                    for user in data if len(user["name"]) > 12
+                ]
+                
+                return extracted_users[:limit]
+    except HTTPError as e:
+        print(f"HTTP Error: {e.code}")
+    except URLError as e:
+        print(f"URL Error: {e.reason}")
+    return []
 
-size = 1000000
-python_loop = list(range(size))
-numpy = np.arange(size)
-print(f"Loading {size} records in memory")
-
-print("\n======Python Loop Test=====")
-start_time_py = time.time()
-python_result = [x * 5 for x in python_loop]
-end_time_py = time.time()
-py_duration = end_time_py - start_time_py
-print(f"Numpy Time Duration {py_duration:.4f} second")
-
-print("\n======Numpy Test======")
-start_time_np = time.time()
-numpy_result = numpy * 5
-end_time_np = time.time()
-numpy_duration = end_time_np - start_time_np
-print(f"Numpy Time Duration {numpy_duration:.4f} second")
-
-speed_duration = py_duration / numpy_duration
-print(f"\n\033[1m Result :Numpy is {speed_duration}x Faster!\033[0m")
+if __name__ == "__main__":
+    users = fetch_user_data(3)
+    print("Filtered Users:")
+    for user in users:
+        print(f"- {user['name']} (Works at: {user['company']})")
