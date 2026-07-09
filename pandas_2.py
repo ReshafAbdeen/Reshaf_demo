@@ -1,34 +1,29 @@
-# Valorant VCT Pro-Player Analytics Pipeline
+# The Execution Time Decorator
 
-import pandas as pd 
-import numpy as np
+import time
+from functools import wraps
 
-print("\033[1m Valorant Esport: Advance AI Data Pipeline \033[0m\n")
+def time_it(func):
+    """A decorator that prints the execution time of a function."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Function '{func.__name__}' executed in {execution_time:.4f} seconds.")
+        return result
+    return wrapper
 
-vct_data = {
-    'Match_Date': ['12-May-2026', '13-May-2026', '12-May-2026', '12-May-2026', '13-May-2026', '14-May-2026'],
-    'Player': ['Tenz', 'Tenz', 'Tenz', "Forsaken", 'Forsaken', 'Forsaken'],
-    "Kills": [25, 12, 30, 18, 22, 15],
-    "Deaths": [10, 15, 12, 18, 14, 20],
-    "Ping_ms": [20, 150, 22, 25, 24, 300]
-}
+@time_it
+def process_data(data_size):
+    """Simulates a time-consuming data processing task."""
+    print(f"Processing {data_size} records...")
+    total = 0
+    for i in range(data_size):
+        total += i * 2
+    return total
 
-df = pd.DataFrame(vct_data)
-print("--Raw Server Data--")
-print(df.head())
-
-df["Match_Date"] = pd.to_datetime(df["Match_Date"])
-
-df["KD_Ratio"] = round(df["Kills"] / df["Deaths"], 2)
-
-df["Performance"] = np.where(df["KD_Ratio"] > 1.5 , "MVP Level", "Normal")
-
-ping_bins = [0, 50, 150, 500 ]
-ping_labels = ["Good", "Playable", "Extreme lag!"]
-df["Srever_Health"] = pd.cut(df["Ping_ms"] , bins=ping_bins, labels=ping_labels)
-
-df = df.sort_values(by=['Player', 'Match_Date'])
-df["2-Match AVG Pings"] = df.groupby("Player")["Ping_ms"].transform(lambda x: x.rolling(2, min_periods=1).mean())
-
-print("===Finala AI-Ready Pipeline Ready hai===")
-print(df)
+if __name__ == "__main__":
+    result = process_data(5000000)
+    print(f"Final Result: {result}")
