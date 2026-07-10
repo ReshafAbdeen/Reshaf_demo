@@ -1,32 +1,31 @@
-# Custom Context Manager (OOP & Magic Methods)import os
+import random
 
-class SafeFileHandler:
-    """Context manager for safely opening files and handling errors."""
-    def __init__(self, filename, mode):
-        self.filename = filename
-        self.mode = mode
-        self.file = None
-
-    def __enter__(self):
-        print(f"Opening file: {self.filename}")
-        self.file = open(self.filename, self.mode)
-        return self.file
-
-    def __exit__(self, exc_type, exc_val, traceback):
-        if self.file:
-            self.file.close()
-            print(f"Closed file: {self.filename}")
-        if exc_type is not None:
-            print(f"An error occurred and was safely caught: {exc_val}")
-        return True 
+def number_guessing_game():
+    print("Welcome to the Number Guessing Game!")
+    print("I have chosen a number between 1 and 100.")
+    
+    secret_number = random.randint(1, 100)
+    attempts = 0
+    max_attempts = 7
+    
+    while attempts < max_attempts:
+        try:
+            guess = int(input(f"\nAttempt {attempts + 1}/{max_attempts}. Enter your guess: "))
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+            continue
+            
+        attempts += 1
+        
+        if guess < secret_number:
+            print("Too low! Try a higher number.")
+        elif guess > secret_number:
+            print("Too high! Try a lower number.")
+        else:
+            print(f"\nCongratulations! You guessed the number in {attempts} attempts!")
+            return
+            
+    print(f"\nGame over! You've run out of attempts. The number was {secret_number}.")
 
 if __name__ == "__main__":
-    file_name = "test_log.txt"
-    
-    with SafeFileHandler(file_name, 'w') as f:
-        f.write("Logging some intermediate Python data...\n")
-        print("Data written successfully.")
-        raise ValueError("Oops! A simulated error occurred.")
-
-    if os.path.exists(file_name):
-        os.remove(file_name) #
+    number_guessing_game()
