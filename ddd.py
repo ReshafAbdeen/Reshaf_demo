@@ -1,19 +1,32 @@
-#3D Arrays & Broadcasting (The Image Filter)
+# Secure Password Generator & Strength Checker
 
-import numpy as np 
-print("\033[2m === AI Computer Vision: Numpy Image Filter === \033[0m\n")
+import secrets
+import string
 
-image_matrix = np.array([
-    [[255, 0, 0], [0, 255, 0]],
-    [[0,  0, 255], [255, 255, 0]]
-])
+def generate_secure_password(length=14):
+    lower = string.ascii_lowercase
+    upper = string.ascii_uppercase
+    digits = string.digits
+    symbols = "!@#$%^&*()_+-="
+    
+    all_chars = lower + upper + digits + symbols
+    
+    password = [
+        secrets.choice(lower),
+        secrets.choice(upper),
+        secrets.choice(digits),
+        secrets.choice(symbols)
+    ]
+    
+    password += [secrets.choice(all_chars) for _ in range(length - 4)]
+    
+    secrets.SystemRandom().shuffle(password)
+    final_password = "".join(password)
+    
+    strength = "Strong" if length >= 12 else "Moderate"
+    
+    return final_password, strength
 
-print("---Original 3D Matrix---")
-print(image_matrix)
-print(f"Image shape : {image_matrix.shape}")
-
-red_filter = np.array([1, 0, 0])
-
-filtered_image = image_matrix * red_filter
-print("\n-- Iamge After 'Red Filter' Applied")
-print(filtered_image)
+pwd, strength = generate_secure_password(16)
+print(f"Generated Password: {pwd}")
+print(f"Password Strength:  {strength}")
