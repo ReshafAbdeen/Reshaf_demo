@@ -1,33 +1,31 @@
-# API Data Fetcher & Data Extraction
+#Automatic File Organizer
 
-import urllib.request
-import json
-from urllib.error import URLError, HTTPError
+import os
+import shutil
 
-def fetch_user_data(limit):
-    """Fetches user data from a public API and filters it."""
-    url = f"https://jsonplaceholder.typicode.com/users"
+def organize_folder(target_dir):
+    EXTENSION_MAP = {
+        "Images": [".jpg", ".jpeg", ".png", ".gif", ".svg"],
+        "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
+        "Audio": [".mp3", ".wav", ".aac"],
+        "Archives": [".zip", ".tar", ".gz", ".rar"],
+    }
     
-    try:
-        print(f"Fetching data from API...")
-        with urllib.request.urlopen(url) as response:
-            if response.status == 200:
-                data = json.loads(response.read().decode('utf-8'))
-                
-                extracted_users = [
-                    {"name": user["name"], "company": user["company"]["name"]}
-                    for user in data if len(user["name"]) > 12
-                ]
-                
-                return extracted_users[:limit]
-    except HTTPError as e:
-        print(f"HTTP Error: {e.code}")
-    except URLError as e:
-        print(f"URL Error: {e.reason}")
-    return []
+    if not os.path.exists(target_dir):
+        print("Directory not found!")
+        return
 
-if __name__ == "__main__":
-    users = fetch_user_data(3)
-    print("Filtered Users:")
-    for user in users:
-        print(f"- {user['name']} (Works at: {user['company']})")
+    for filename in os.listdir(target_dir):
+        file_path = os.path.join(target_dir, filename)
+        
+        if os.path.isfile(file_path):
+            file_ext = os.path.splitext(filename)[1].lower()
+            
+            for folder_name, extensions in EXTENSION_MAP.items():
+                if file_ext in extensions:
+                    dest_folder = os.path.join(target_dir, folder_name)
+                    os.makedirs(dest_folder, exist_ok=True)
+                    shutil.move(file_path, os.path.join(dest_folder, filename))
+                    print(f"Moved: {filename} -> {folder_name}")
+                    break
+
