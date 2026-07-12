@@ -1,32 +1,27 @@
-# Secure Password Generator & Strength Checker
+# Number Guessing Game# 2. NUMBER GUESSING GAME (30 Lines)
+import random
 
-import secrets
-import string
+def guessing_game():
+    secret_number = random.randint(1, 100)
+    attempts = 0
+    print("Welcome! I am thinking of a number between 1 and 100.")
 
-def generate_secure_password(length=14):
-    lower = string.ascii_lowercase
-    upper = string.ascii_uppercase
-    digits = string.digits
-    symbols = "!@#$%^&*()_+-="
-    
-    all_chars = lower + upper + digits + symbols
-    
-    password = [
-        secrets.choice(lower),
-        secrets.choice(upper),
-        secrets.choice(digits),
-        secrets.choice(symbols)
-    ]
-    
-    password += [secrets.choice(all_chars) for _ in range(length - 4)]
-    
-    secrets.SystemRandom().shuffle(password)
-    final_password = "".join(password)
-    
-    strength = "Strong" if length >= 12 else "Moderate"
-    
-    return final_password, strength
+    while True:
+        user_input = input("Take a guess: ").strip()
+        if not user_input.isdigit():
+            print("Please enter a valid number.")
+            continue
+        
+        guess = int(user_input)
+        attempts += 1
 
-pwd, strength = generate_secure_password(16)
-print(f"Generated Password: {pwd}")
-print(f"Password Strength:  {strength}")
+        if guess < secret_number:
+            print("Too low! Try again.")
+        elif guess > secret_number:
+            print("Too high! Try again.")
+        else:
+            print(f"Correct! You found it in {attempts} attempts.")
+            break
+
+if __name__ == "__main__":
+    guessing_game()
