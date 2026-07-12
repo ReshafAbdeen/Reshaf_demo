@@ -34,11 +34,12 @@ def check_ffmpeg():
 def get_quality_format(choice):
     """User ke choice ke hisaab se yt-dlp format string return karta hai."""
     formats = {
-        "1": "bestvideo[height<=2160]+bestaudio/best",   # 4K
-        "2": "bestvideo[height<=1080]+bestaudio/best",   # 1080p Full HD
-        "3": "bestvideo[height<=720]+bestaudio/best",    # 720p HD
-        "4": "bestvideo[height<=480]+bestaudio/best",    # 480p
-        "5": "bestaudio/best",                           # Audio only
+        "1": "bestvideo[height<=4320]+bestaudio/best",   # 8K
+        "2": "bestvideo[height<=2160]+bestaudio/best",   # 4K
+        "3": "bestvideo[height<=1080]+bestaudio/best",   # 1080p Full HD
+        "4": "bestvideo[height<=720]+bestaudio/best",    # 720p HD
+        "5": "bestvideo[height<=480]+bestaudio/best",    # 480p
+        "6": "bestaudio/best",                           # Audio only
     }
     return formats.get(choice, "bestvideo+bestaudio/best")
 
@@ -70,12 +71,13 @@ def main():
         return
 
     print("\nQuality choose karo:")
-    print("  1. 4K (2160p)")
-    print("  2. Full HD (1080p)")
-    print("  3. HD (720p)")
-    print("  4. SD (480p)")
-    print("  5. Sirf Audio (MP3)")
-    quality_choice = input("Apna choice number daalo (default 2): ").strip() or "2"
+    print("  1. 8K (4320p)")
+    print("  2. 4K (2160p)")
+    print("  3. Full HD (1080p)")
+    print("  4. HD (720p)")
+    print("  5. SD (480p)")
+    print("  6. Sirf Audio (MP3)")
+    quality_choice = input("Apna choice number daalo (default 3): ").strip() or "3"
 
     print("\nVolume adjust karna hai?")
     print("  1. Original (koi change nahi)")
@@ -84,7 +86,7 @@ def main():
     print("  4. Kam volume (0.5x)")
     volume_choice = input("Apna choice number daalo (default 1): ").strip() or "1"
 
-    output_folder = input("\nDownload folder ka path daalo (blank = current folder): ").strip() or "."
+    output_folder = r"C:\Users\abdee\Videos\YT Video"
     os.makedirs(output_folder, exist_ok=True)
 
     output_template = os.path.join(output_folder, "%(title)s.%(ext)s")
@@ -100,7 +102,7 @@ def main():
     postprocessors = []
 
     # Agar audio-only choose kiya hai, MP3 me convert karo
-    if quality_choice == "5":
+    if quality_choice == "6":
         postprocessors.append({
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
@@ -127,7 +129,7 @@ def main():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
         print("\nDownload safaltapoorvak (successfully) complete ho gaya!")
-        print(f"   File yahan mili: {os.path.abspath(output_folder)}")
+        print(f"   File yahan save hui: {output_folder}")
     except Exception as e:
         print(f"\nKuch error aaya: {e}")
         print("   Check karo: URL sahi hai, internet connection theek hai, aur FFmpeg installed hai.")
