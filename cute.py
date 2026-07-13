@@ -1,31 +1,37 @@
-import random
+# Valorant Weapons Shop Manager
 
-def number_guessing_game():
-    print("Welcome to the Number Guessing Game!")
-    print("I have chosen a number between 1 and 100.")
-    
-    secret_number = random.randint(1, 100)
-    attempts = 0
-    max_attempts = 7
-    
-    while attempts < max_attempts:
-        try:
-            guess = int(input(f"\nAttempt {attempts + 1}/{max_attempts}. Enter your guess: "))
-        except ValueError:
-            print("Invalid input. Please enter a whole number.")
-            continue
-            
-        attempts += 1
-        
-        if guess < secret_number:
-            print("Too low! Try a higher number.")
-        elif guess > secret_number:
-            print("Too high! Try a lower number.")
+print("\033[1m" + "== Valorant Weapons Shop Manager ==" + "\033[0m\n")
+
+def buy_weapon(budget, gun_name):
+    if gun_name == "Vandal":
+        if budget >= 2900: 
+            budget -= 2900
+            return f"Vandal Bought! {budget}$ left in your Account."
         else:
-            print(f"\nCongratulations! You guessed the number in {attempts} attempts!")
-            return
+            return f"Bhai sirf {budget}$ hain, Vandal nahi aayegi. Pistol le le!"
             
-    print(f"\nGame over! You've run out of attempts. The number was {secret_number}.")
+    elif gun_name == "Operator":
+        if budget >= 4700: 
+            budget -= 4700
+            return f"Operator Bought! {budget}$ left in your Account."
+        else:
+            return f"Bhai Operator 4700 ki aati hai, paise kam hain!"
+            
+    else:
+        return f"Bhai Valorant hai, '{gun_name}' yahan nahi milti!"
 
-if __name__ == "__main__":
-    number_guessing_game()
+while True:
+    print("-" * 30)
+    budget_input = int(input("Enter Your Budget (ya exit ke liye 0 likho): "))
+    
+    if budget_input == 0:
+        print("Shop Closed! GG!")
+        break
+        
+    gun_input = input("Enter Gun Name (Vandal/Operator): ")
+
+    final_result = buy_weapon(budget_input, gun_input)
+
+    print(final_result)
+
+
