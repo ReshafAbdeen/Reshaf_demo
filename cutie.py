@@ -1,34 +1,41 @@
-# Simple Todo List Application
+# The def Keyword (Custom Functions)
+
+print("\033[1m" + "===  Valorant AI: Rank Predictor Function ===" + "\033[0m\n")
+
+def predict_rank(Player_name, kills, deaths):
+    if deaths == 0:
+        deaths == 1
+
+    kd_ratio = round(kills / deaths, 2)
+
+    if kd_ratio >= 2.5:
+        rank = "Radiant"
+    elif kd_ratio >= 1.5:
+        rank = "Ascendant"
+    elif kd_ratio >= 1:
+        rank = "Gold"
+    else:
+        rank = "Iron (Thoda Aim sahi karo bhai)"
+
+    report = f"Player {Player_name} | K/D : {kd_ratio} | Predict Rank : {rank}"
+    return report 
+print("System Active! You Want to exit type Quit...\n")
+
+while True:
+
+    name_input = input("Enter Your Name : ")
+    if name_input.lower() == "quit":
+        print("System sutting down...Go")
+        break
+    kill_input = int(input("Enter Your kill : "))
+    deaths_input = int(input("Enter Your Deaths : "))
+
+    final_result = predict_rank(name_input, kill_input, deaths_input)
+    print(final_result)
 
 
-# 1. SIMPLE TODO LIST APPLICATION (30 Lines)
-def show_menu():
-    print("\n--- TODO MENU ---")
-    print("1. Add Task\n2. View Tasks\n3. Exit")
+    
 
-def todo_app():
-    tasks = []
-    while True:
-        show_menu()
-        choice = input("Choose an option (1-3): ").strip()
-        
-        if choice == "1":
-            task = input("Enter the task: ").strip()
-            if task:
-                tasks.append(task)
-                print(f"'{task}' added successfully!")
-        elif choice == "2":
-            if not tasks:
-                print("Your todo list is empty!")
-            else:
-                print("\n--- YOUR TASKS ---")
-                for index, task in enumerate(tasks, 1):
-                    print(f"{index}. {task}")
-        elif choice == "3":
-            print("Goodbye!")
-            break
-        else:
-            print("Invalid choice. Please choose 1, 2, or 3.")
 
-if __name__ == "__main__":
-    todo_app()
+
+player1 = predict_rank("Zaynul", 12, 2)
