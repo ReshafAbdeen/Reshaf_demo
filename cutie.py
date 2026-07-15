@@ -1,41 +1,32 @@
-# The def Keyword (Custom Functions)
+# Secure Password Generator
 
-print("\033[1m" + "===  Valorant AI: Rank Predictor Function ===" + "\033[0m\n")
-
-def predict_rank(Player_name, kills, deaths):
-    if deaths == 0:
-        deaths == 1
-
-    kd_ratio = round(kills / deaths, 2)
-
-    if kd_ratio >= 2.5:
-        rank = "Radiant"
-    elif kd_ratio >= 1.5:
-        rank = "Ascendant"
-    elif kd_ratio >= 1:
-        rank = "Gold"
-    else:
-        rank = "Iron (Thoda Aim sahi karo bhai)"
-
-    report = f"Player {Player_name} | K/D : {kd_ratio} | Predict Rank : {rank}"
-    return report 
-print("System Active! You Want to exit type Quit...\n")
-
+import random
+import string
+def generate_password(length, digits, symbols):
+    characters = string.ascii_letters
+    if digits:
+        characters += string.digits
+    if symbols:
+        characters += string.punctuation
+    if length < 4:
+        return "Error: Length must be at least 4!"
+    password = ""
+    for _ in range(length):
+        password += random.choice(characters)
+    return password
+print("--- Secure Password Generator ---")
 while True:
-
-    name_input = input("Enter Your Name : ")
-    if name_input.lower() == "quit":
-        print("System sutting down...Go")
+    try:
+        pwd_len = int(input("Enter length: "))
+        inc_num = input("Numbers? (y/n): ").lower() == 'y'
+        inc_sym = input("Symbols? (y/n): ").lower() == 'y'
+        final_pwd = generate_password(pwd_len, inc_num, inc_sym)
+        print(f"\nGenerated Password: {final_pwd}")
+        print("Make sure to save it securely!")
         break
-    kill_input = int(input("Enter Your kill : "))
-    deaths_input = int(input("Enter Your Deaths : "))
-
-    final_result = predict_rank(name_input, kill_input, deaths_input)
-    print(final_result)
-
-
-    
-
-
-
-player1 = predict_rank("Zaynul", 12, 2)
+    except ValueError:
+        print("Invalid input! Please enter a number.")
+    print("Try again...")
+# Security is important in today's digital world.
+# End of Generator Script
+print("Thank you for using the generator!")
