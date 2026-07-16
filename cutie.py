@@ -1,32 +1,30 @@
-# Secure Password Generator
-
-import random
-import string
-def generate_password(length, digits, symbols):
-    characters = string.ascii_letters
-    if digits:
-        characters += string.digits
-    if symbols:
-        characters += string.punctuation
-    if length < 4:
-        return "Error: Length must be at least 4!"
-    password = ""
-    for _ in range(length):
-        password += random.choice(characters)
-    return password
-print("--- Secure Password Generator ---")
-while True:
-    try:
-        pwd_len = int(input("Enter length: "))
-        inc_num = input("Numbers? (y/n): ").lower() == 'y'
-        inc_sym = input("Symbols? (y/n): ").lower() == 'y'
-        final_pwd = generate_password(pwd_len, inc_num, inc_sym)
-        print(f"\nGenerated Password: {final_pwd}")
-        print("Make sure to save it securely!")
-        break
-    except ValueError:
-        print("Invalid input! Please enter a number.")
-    print("Try again...")
-# Security is important in today's digital world.
-# End of Generator Script
-print("Thank you for using the generator!")
+quiz_data = {
+    "What is 5 + 7?": "12",
+    "What is the capital of France?": "paris",
+    "Which language is this code written in?": "python"
+}
+def run_quiz():
+    score = 0
+    print("--- Welcome to the Mini Quiz ---")
+    print("Answer the following 3 questions:\n")
+    for question, correct_answer in quiz_data.items():
+        print(question)
+        user_answer = input("Your answer: ").strip().lower()
+        if user_answer == correct_answer:
+            print("Correct! +1 point.\n")
+            score += 1
+        else:
+            print(f"Wrong! The correct answer was: {correct_answer}\n")
+    return score
+if __name__ == "__main__":
+    final_score = run_quiz()
+    total_qs = len(quiz_data)
+    print(f"Quiz Complete! Your score: {final_score}/{total_qs}")
+    if final_score == total_qs:
+        print("Excellent! You got all of them right.")
+    elif final_score > 0:
+        print("Good effort! Keep learning.")
+    else:
+        print("Oops! Better luck next time.")
+# Quiz module finished successfully
+print("Thank you for playing!")
