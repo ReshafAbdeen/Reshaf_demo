@@ -1,30 +1,30 @@
-quiz_data = {
-    "What is 5 + 7?": "12",
-    "What is the capital of France?": "paris",
-    "Which language is this code written in?": "python"
-}
-def run_quiz():
-    score = 0
-    print("--- Welcome to the Mini Quiz ---")
-    print("Answer the following 3 questions:\n")
-    for question, correct_answer in quiz_data.items():
-        print(question)
-        user_answer = input("Your answer: ").strip().lower()
-        if user_answer == correct_answer:
-            print("Correct! +1 point.\n")
-            score += 1
+# Simple Contact Bookcontacts = {}
+def display_menu():
+    print("\n--- Contact Book ---")
+    print("1. Add Contact")
+    print("2. View Contacts")
+    print("3. Delete Contact")
+    print("4. Exit")
+while True:
+    display_menu()
+    choice = input("Enter choice (1-4): ")
+    if choice == '1':
+        name = input("Enter name: ").strip()
+        phone = input("Enter phone: ").strip()
+        contacts[name] = phone
+        print(f"Contact '{name}' added!")
+    elif choice == '2':
+        print("\nSaved Contacts:")
+        if not contacts:
+            print("No contacts found.")
+        for n, p in contacts.items():
+            print(f"Name: {n} | Phone: {p}")
+    elif choice == '3':
+        name = input("Name to delete: ").strip()
+        if contacts.pop(name, None):
+            print(f"Contact '{name}' deleted!")
         else:
-            print(f"Wrong! The correct answer was: {correct_answer}\n")
-    return score
-if __name__ == "__main__":
-    final_score = run_quiz()
-    total_qs = len(quiz_data)
-    print(f"Quiz Complete! Your score: {final_score}/{total_qs}")
-    if final_score == total_qs:
-        print("Excellent! You got all of them right.")
-    elif final_score > 0:
-        print("Good effort! Keep learning.")
-    else:
-        print("Oops! Better luck next time.")
-# Quiz module finished successfully
-print("Thank you for playing!")
+            print("Contact not found.")
+    elif choice == '4':
+        print("Exiting Contact Book...")
+        break
