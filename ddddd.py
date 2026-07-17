@@ -1,30 +1,30 @@
-expenses = []
-def add_expense(item, amount):
-    expenses.append({"item": item, "amount": amount})
-    print(f"Added: {item} - ${amount}")
-def view_expenses():
-    total = 0
-    print("\n--- Expense List ---")
-    for exp in expenses:
-        print(f"{exp['item']}: ${exp['amount']}")
-        total += exp['amount']
-    print(f"Total Spent: ${total}\n--------------------")
-while True:
-    print("1. Add Expense  2. View  3. Exit")
-    choice = input("Select option: ")
-    if choice == '1':
-        item_name = input("Enter item name: ")
-        try:
-            cost = float(input("Enter amount: "))
-            add_expense(item_name, cost)
-        except ValueError:
-            print("Invalid amount!")
-    elif choice == '2':
-        view_expenses()
-    elif choice == '3':
-        print("Exiting Tracker...")
-        break
-    else:
-        print("Invalid choice, try again.")
-# Expense tracker closed.
-print("Have a great day!")
+# Countdown Timerimport time
+import sys
+def countdown_timer():
+    print("--- Countdown Timer ---")
+    try:
+        seconds = int(input("Enter time in seconds: "))
+        if seconds <= 0:
+            print("Please enter a positive number.")
+            return
+        print("Timer Started!")
+        while seconds > 0:
+            mins, secs = divmod(seconds, 60)
+            timer = f"{mins:02d}:{secs:02d}"
+            sys.stdout.write(f"\rRemaining: {timer}")
+            sys.stdout.flush()
+            time.sleep(1)
+            seconds -= 1
+        print("\nTime's up! BEEP BEEP BEEP!")
+    except ValueError:
+        print("Invalid input! Enter an integer.")
+    except KeyboardInterrupt:
+        print("\nTimer stopped by user.")
+if __name__ == "__main__":
+    while True:
+        countdown_timer()
+        again = input("Set another timer? (y/n): ")
+        if again.lower() != 'y':
+            print("Exiting Timer App...")
+            break
+print("Goodbye!")
