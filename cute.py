@@ -1,30 +1,32 @@
-history = []
-def calculate(num1, op, num2):
-    if op == '+': return num1 + num2
-    if op == '-': return num1 - num2
-    if op == '*': return num1 * num2
-    if op == '/': return num1 / num2 if num2 != 0 else "Error: Div by 0"
-    return "Invalid operator"
-print("--- Python Calculator ---")
+# Text File Analyzer
+
+import os
+def analyze_file(filename):
+    if not os.path.exists(filename):
+        print(f"Error: '{filename}' does not exist.")
+        return
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            total_lines = len(lines)
+            words = sum(len(line.split()) for line in lines)
+            chars = sum(len(line) for line in lines)
+        print("\n--- File Analysis Report ---")
+        print(f"File Name: {filename}")
+        print(f"Total Lines: {total_lines}")
+        print(f"Total Words: {words}")
+        print(f"Total Characters: {chars}")
+        print("----------------------------\n")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+print("--- Text File Analyzer ---")
 while True:
-    print("\nOptions: 'c' to calculate, 'h' for history, 'q' to quit")
-    choice = input("Enter choice: ").lower()
-    if choice == 'q':
+    path = input("Enter filename (or 'q' to quit): ")
+    if path.lower() == 'q':
+        print("Exiting Analyzer...")
         break
-    elif choice == 'h':
-        print("History:", history if history else "Empty")
-    elif choice == 'c':
-        try:
-            n1 = float(input("Enter first number: "))
-            opr = input("Enter operator (+, -, *, /): ")
-            n2 = float(input("Enter second number: "))
-            res = calculate(n1, opr, n2)
-            print(f"Result: {res}")
-            if isinstance(res, float):
-                history.append(f"{n1} {opr} {n2} = {res}")
-        except ValueError:
-            print("Please enter valid numbers!")
-    else:
-        print("Unknown command!")
-# Save output or clear it based on session.
-print("Calculator session ended.")
+    analyze_file(path)
+# End of Script
+print("Run again to analyze more files.")
+# Keep coding!
+print("Goodbye!")
