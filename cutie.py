@@ -1,30 +1,33 @@
-# Simple Contact Bookcontacts = {}
-def display_menu():
-    print("\n--- Contact Book ---")
-    print("1. Add Contact")
-    print("2. View Contacts")
-    print("3. Delete Contact")
-    print("4. Exit")
+# Simple Login & Registration System
+
+
+users_db = {"admin": "pass123", "user1": "python99"}
+def register():
+    username = input("New Username: ").strip()
+    if username in users_db:
+        print("Username already exists!")
+    else:
+        password = input("New Password: ").strip()
+        users_db[username] = password
+        print(f"User '{username}' registered successfully!")
+def login():
+    username = input("Username: ").strip()
+    password = input("Password: ").strip()
+    if users_db.get(username) == password:
+        print(f"Login successful! Welcome, {username}.")
+    else:
+        print("Invalid credentials! Try again.")
+print("--- Simple Auth System ---")
 while True:
-    display_menu()
-    choice = input("Enter choice (1-4): ")
+    print("\n1. Register  2. Login  3. Exit")
+    choice = input("Choose an option: ")
     if choice == '1':
-        name = input("Enter name: ").strip()
-        phone = input("Enter phone: ").strip()
-        contacts[name] = phone
-        print(f"Contact '{name}' added!")
+        register()
     elif choice == '2':
-        print("\nSaved Contacts:")
-        if not contacts:
-            print("No contacts found.")
-        for n, p in contacts.items():
-            print(f"Name: {n} | Phone: {p}")
+        login()
     elif choice == '3':
-        name = input("Name to delete: ").strip()
-        if contacts.pop(name, None):
-            print(f"Contact '{name}' deleted!")
-        else:
-            print("Contact not found.")
-    elif choice == '4':
-        print("Exiting Contact Book...")
+        print("Exiting Auth System...")
         break
+    else:
+        print("Invalid choice!")
+print("Thank you for using the system.")
