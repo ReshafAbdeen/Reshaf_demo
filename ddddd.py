@@ -1,30 +1,32 @@
-# Countdown Timerimport time
-import sys
-def countdown_timer():
-    print("--- Countdown Timer ---")
-    try:
-        seconds = int(input("Enter time in seconds: "))
-        if seconds <= 0:
-            print("Please enter a positive number.")
-            return
-        print("Timer Started!")
-        while seconds > 0:
-            mins, secs = divmod(seconds, 60)
-            timer = f"{mins:02d}:{secs:02d}"
-            sys.stdout.write(f"\rRemaining: {timer}")
-            sys.stdout.flush()
-            time.sleep(1)
-            seconds -= 1
-        print("\nTime's up! BEEP BEEP BEEP!")
-    except ValueError:
-        print("Invalid input! Enter an integer.")
-    except KeyboardInterrupt:
-        print("\nTimer stopped by user.")
-if __name__ == "__main__":
+# Rock, Paper, Scissors Game
+
+import random
+def play_rps():
+    choices = ['rock', 'paper', 'scissors']
+    u_score, c_score = 0, 0
+    print("--- Rock, Paper, Scissors ---")
     while True:
-        countdown_timer()
-        again = input("Set another timer? (y/n): ")
-        if again.lower() != 'y':
-            print("Exiting Timer App...")
+        print(f"\nScore -> You: {u_score} | Comp: {c_score}")
+        user = input("rock, paper, scissors (or 'q' to quit): ").lower()
+        if user == 'q':
             break
-print("Goodbye!")
+        if user not in choices:
+            print("Invalid input!")
+            continue
+        comp = random.choice(choices)
+        print(f"Computer chose: {comp}")
+        if user == comp:
+            print("It's a tie!")
+        elif (user == 'rock' and comp == 'scissors') or \
+             (user == 'paper' and comp == 'rock') or \
+             (user == 'scissors' and comp == 'paper'):
+            print("You win this round!")
+            u_score += 1
+        else:
+            print("Computer wins this round!")
+            c_score += 1
+    print(f"Final -> You: {u_score} | Computer: {c_score}")
+if __name__ == "__main__":
+    play_rps()
+    print("Game Over!")
+print("Bye!")
