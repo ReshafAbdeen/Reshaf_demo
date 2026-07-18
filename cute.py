@@ -1,32 +1,32 @@
-# Text File Analyzer
+# Unit & Temperature Converter
 
-import os
-def analyze_file(filename):
-    if not os.path.exists(filename):
-        print(f"Error: '{filename}' does not exist.")
+def convert_units():
+    print("\n--- Unit Converter ---")
+    print("1. Kilometers to Miles")
+    print("2. Miles to Kilometers")
+    print("3. Celsius to Fahrenheit")
+    print("4. Fahrenheit to Celsius")
+    choice = input("Choose an option (1-4): ")
+    if choice not in ['1', '2', '3', '4']:
+        print("Invalid choice!")
         return
     try:
-        with open(filename, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-            total_lines = len(lines)
-            words = sum(len(line.split()) for line in lines)
-            chars = sum(len(line) for line in lines)
-        print("\n--- File Analysis Report ---")
-        print(f"File Name: {filename}")
-        print(f"Total Lines: {total_lines}")
-        print(f"Total Words: {words}")
-        print(f"Total Characters: {chars}")
-        print("----------------------------\n")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-print("--- Text File Analyzer ---")
+        val = float(input("Enter value to convert: "))
+        if choice == '1':
+            print(f"{val} km = {val * 0.621371:.2f} miles")
+        elif choice == '2':
+            print(f"{val} miles = {val / 0.621371:.2f} km")
+        elif choice == '3':
+            print(f"{val}°C = {(val * 9/5) + 32:.2f}°F")
+        elif choice == '4':
+            print(f"{val}°F = {(val - 32) * 5/9:.2f}°C")
+    except ValueError:
+        print("Please enter a valid number.")
 while True:
-    path = input("Enter filename (or 'q' to quit): ")
-    if path.lower() == 'q':
-        print("Exiting Analyzer...")
+    convert_units()
+    again = input("Convert another? (y/n): ").lower()
+    if again != 'y':
+        print("Exiting Converter...")
         break
-    analyze_file(path)
-# End of Script
-print("Run again to analyze more files.")
-# Keep coding!
+# End of program
 print("Goodbye!")
