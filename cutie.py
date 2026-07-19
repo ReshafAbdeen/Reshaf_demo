@@ -1,33 +1,32 @@
-# Simple Login & Registration System
+# Caesar Cipher (Message Encryptor & Decryptor)
 
-
-users_db = {"admin": "pass123", "user1": "python99"}
-def register():
-    username = input("New Username: ").strip()
-    if username in users_db:
-        print("Username already exists!")
-    else:
-        password = input("New Password: ").strip()
-        users_db[username] = password
-        print(f"User '{username}' registered successfully!")
-def login():
-    username = input("Username: ").strip()
-    password = input("Password: ").strip()
-    if users_db.get(username) == password:
-        print(f"Login successful! Welcome, {username}.")
-    else:
-        print("Invalid credentials! Try again.")
-print("--- Simple Auth System ---")
+def caesar_cipher(text, shift, mode='encrypt'):
+    result = ""
+    if mode == 'decrypt':
+        shift = -shift
+    for char in text:
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            new_char = chr((ord(char) - base + shift) % 26 + base)
+            result += new_char
+        else:
+            result += char
+    return result
+print("--- Caesar Cipher Program ---")
 while True:
-    print("\n1. Register  2. Login  3. Exit")
-    choice = input("Choose an option: ")
-    if choice == '1':
-        register()
-    elif choice == '2':
-        login()
-    elif choice == '3':
-        print("Exiting Auth System...")
+    print("\n1. Encrypt  2. Decrypt  3. Exit")
+    choice = input("Enter choice (1/2/3): ")
+    if choice == '3':
+        print("Exiting...")
         break
+    elif choice in ['1', '2']:
+        mode = 'encrypt' if choice == '1' else 'decrypt'
+        message = input("Enter your message: ")
+        try:
+            shift_val = int(input("Enter shift value (number): "))
+            output = caesar_cipher(message, shift_val, mode)
+            print(f"Result: {output}")
+        except ValueError:
+            print("Shift value must be a number!")
     else:
-        print("Invalid choice!")
-print("Thank you for using the system.")
+        print("Invalid choice, please try again.")
