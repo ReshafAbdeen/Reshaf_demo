@@ -1,32 +1,32 @@
-# Rock, Paper, Scissors Game
+# Advanced Dice Roller Simulator
 
 import random
-def play_rps():
-    choices = ['rock', 'paper', 'scissors']
-    u_score, c_score = 0, 0
-    print("--- Rock, Paper, Scissors ---")
+def roll_dice():
+    print("--- Advanced Dice Roller ---")
+    history = []
     while True:
-        print(f"\nScore -> You: {u_score} | Comp: {c_score}")
-        user = input("rock, paper, scissors (or 'q' to quit): ").lower()
-        if user == 'q':
-            break
-        if user not in choices:
-            print("Invalid input!")
-            continue
-        comp = random.choice(choices)
-        print(f"Computer chose: {comp}")
-        if user == comp:
-            print("It's a tie!")
-        elif (user == 'rock' and comp == 'scissors') or \
-             (user == 'paper' and comp == 'rock') or \
-             (user == 'scissors' and comp == 'paper'):
-            print("You win this round!")
-            u_score += 1
-        else:
-            print("Computer wins this round!")
-            c_score += 1
-    print(f"Final -> You: {u_score} | Computer: {c_score}")
-if __name__ == "__main__":
-    play_rps()
-    print("Game Over!")
-print("Bye!")
+        try:
+            sides = int(input("\nEnter number of sides (e.g., 6) or 0 to quit: "))
+            if sides == 0:
+                break
+            if sides < 2:
+                print("A dice must have at least 2 sides!")
+                continue
+            rolls = int(input("How many times to roll? "))
+            if rolls < 1:
+                print("Must roll at least once!")
+                continue
+            current_rolls = [random.randint(1, sides) for _ in range(rolls)]
+            history.extend(current_rolls)
+            print(f"You rolled: {current_rolls}")
+            print(f"Total sum of this roll: {sum(current_rolls)}")
+        except ValueError:
+            print("Please enter valid integers!")
+    if history:
+        print("\n--- Session Statistics ---")
+        print(f"Total rolls made: {len(history)}")
+        print(f"Sum of all rolls: {sum(history)}")
+        print(f"Highest roll achieved: {max(history)}")
+        print(f"Average roll: {sum(history)/len(history):.2f}")
+    print("Thanks for rolling with us!")
+roll_dice()
