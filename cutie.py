@@ -1,32 +1,32 @@
-# Caesar Cipher (Message Encryptor & Decryptor)
+# Word Frequency Counter
 
-def caesar_cipher(text, shift, mode='encrypt'):
-    result = ""
-    if mode == 'decrypt':
-        shift = -shift
-    for char in text:
-        if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
-            new_char = chr((ord(char) - base + shift) % 26 + base)
-            result += new_char
+import string
+def count_words(text):
+    text = text.lower()
+    for p in string.punctuation:
+        text = text.replace(p, "")
+    words = text.split()
+    word_count = {}
+    for word in words:
+        if word in word_count:
+            word_count[word] += 1
         else:
-            result += char
-    return result
-print("--- Caesar Cipher Program ---")
+            word_count[word] = 1
+    return word_count
+print("--- Word Frequency Counter ---")
 while True:
-    print("\n1. Encrypt  2. Decrypt  3. Exit")
-    choice = input("Enter choice (1/2/3): ")
-    if choice == '3':
-        print("Exiting...")
+    print("\nEnter a sentence/paragraph (or type 'quit' to exit):")
+    user_input = input("> ")
+    if user_input.lower().strip() == 'quit':
         break
-    elif choice in ['1', '2']:
-        mode = 'encrypt' if choice == '1' else 'decrypt'
-        message = input("Enter your message: ")
-        try:
-            shift_val = int(input("Enter shift value (number): "))
-            output = caesar_cipher(message, shift_val, mode)
-            print(f"Result: {output}")
-        except ValueError:
-            print("Shift value must be a number!")
-    else:
-        print("Invalid choice, please try again.")
+    if not user_input.strip():
+        print("Please enter some text!")
+        continue
+    frequencies = count_words(user_input)
+    sorted_freq = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    print("\nWord Frequencies:")
+    for word, count in sorted_freq:
+        print(f"'{word}': {count} times")
+print("Exiting Word Counter...")
+# Word counter session closed.
+print("Goodbye!")
