@@ -1,32 +1,33 @@
-# BMI (Body Mass Index) Calculator
+# Simple Alarm Clock
 
-def calculate_bmi(weight, height):
-    return weight / (height ** 2)
-def get_category(bmi):
-    if bmi < 18.5:
-        return "Underweight"
-    elif 18.5 <= bmi < 24.9:
-        return "Normal weight"
-    elif 25 <= bmi < 29.9:
-        return "Overweight"
-    else:
-        return "Obesity"
-print("--- BMI Calculator ---")
-while True:
-    print("\nEnter 'q' to quit at any time.")
-    w_input = input("Enter your weight in kg: ")
-    if w_input.lower() == 'q': break
-    h_input = input("Enter your height in meters (e.g. 1.75): ")
-    if h_input.lower() == 'q': break
-    try:
-        weight = float(w_input)
-        height = float(h_input)
-        if weight <= 0 or height <= 0:
-            print("Values must be greater than zero!")
-            continue
-        bmi_value = calculate_bmi(weight, height)
-        category = get_category(bmi_value)
-        print(f"\nYour BMI is: {bmi_value:.2f}")
-        print(f"Health Category: {category}")
-    except ValueError:
-        print("Invalid input! Please enter numbers only.")
+
+import time
+import datetime
+def set_alarm():
+    print("--- Simple Alarm Clock ---")
+    while True:
+        alarm_time = input("Enter time in HH:MM (24-hour format) or 'q' to quit: ")
+        if alarm_time.lower() == 'q':
+            print("Exiting Alarm Clock...")
+            break
+        try:
+            valid_time = datetime.datetime.strptime(alarm_time, "%H:%M")
+            print(f"Alarm set for {alarm_time}. Waiting...")
+            while True:
+                now = datetime.datetime.now()
+                current_time = now.strftime("%H:%M")
+                if current_time == alarm_time:
+                    print("\nWake up! BEEP BEEP BEEP!")
+                    break
+                time.sleep(10) # Check every 10 seconds
+            break
+        except ValueError:
+            print("Invalid format! Use HH:MM like 07:30 or 14:45")
+if __name__ == "__main__":
+    set_alarm()
+# Alarm clock module finished.
+# Wake up early, be productive!
+print("Run again to set a new alarm.")
+# Stay punctual!
+print("Goodbye!")
+# End
