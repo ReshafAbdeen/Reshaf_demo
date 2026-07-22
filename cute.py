@@ -1,33 +1,33 @@
-# Simple Alarm Clock
+# Mock Currency Converter
 
 
-import time
-import datetime
-def set_alarm():
-    print("--- Simple Alarm Clock ---")
-    while True:
-        alarm_time = input("Enter time in HH:MM (24-hour format) or 'q' to quit: ")
-        if alarm_time.lower() == 'q':
-            print("Exiting Alarm Clock...")
-            break
-        try:
-            valid_time = datetime.datetime.strptime(alarm_time, "%H:%M")
-            print(f"Alarm set for {alarm_time}. Waiting...")
-            while True:
-                now = datetime.datetime.now()
-                current_time = now.strftime("%H:%M")
-                if current_time == alarm_time:
-                    print("\nWake up! BEEP BEEP BEEP!")
-                    break
-                time.sleep(10) # Check every 10 seconds
-            break
-        except ValueError:
-            print("Invalid format! Use HH:MM like 07:30 or 14:45")
-if __name__ == "__main__":
-    set_alarm()
-# Alarm clock module finished.
-# Wake up early, be productive!
-print("Run again to set a new alarm.")
-# Stay punctual!
-print("Goodbye!")
-# End
+# Mock Currency Converter
+rates = {"USD": 1.0, "EUR": 0.85, "INR": 83.0, "GBP": 0.75}
+def convert(amount, from_curr, to_curr):
+    if from_curr not in rates or to_curr not in rates:
+        return None
+    usd_amount = amount / rates[from_curr]
+    return usd_amount * rates[to_curr]
+print("--- Mock Currency Converter ---")
+while True:
+    print(f"Available: {', '.join(rates.keys())}")
+    print("Enter 'q' to quit at any time.")
+    f_curr = input("From Currency: ").upper()
+    if f_curr == 'Q': break
+    t_curr = input("To Currency: ").upper()
+    if t_curr == 'Q': break
+    try:
+        amt = float(input("Enter Amount: "))
+        res = convert(amt, f_curr, t_curr)
+        if res is not None:
+            print(f"{amt} {f_curr} = {res:.2f} {t_curr}\n")
+        else:
+            print("Invalid Currency Code!\n")
+    except ValueError:
+        print("Invalid amount!\n")
+# Converter module finished.
+print("Currency rates are just mock values.")
+print("Thanks for using!")
+# Always verify real rates online.
+# Stay updated!
+# End of Program
