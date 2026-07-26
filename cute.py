@@ -1,74 +1,31 @@
-# Bank Account Management System
-
-from datetime import datetime
-
-class BankAccount:
-    """Basic bank account eith deposit, widrawl aru transaction"""
-    bank_name = "Python Bankof Zaynul"
-    total_account = 0
-
-    def __init__(self, name, balance=0):
-        self.name = name
-        self._balance = balance
-        self.transaction = []
-        BankAccount.total_account += 1
-        self.account_no = 1000 + BankAccount.total_account
-
-    @property
-    def balance(self):
-        return self._balance
-
-    def deposit(self, amount):
-        if amount <= 0:
-            print("Amount positive hona chahiye!!!!")
-            return
-
-        self._balance += amount
-        self._log(f"Deposit : ${amount}")
-        print(f"${amount} deposit ho gya  hai. Naya balance {self._balance}")
-
-    def withdrawl(self, amount):
-        if amount > self._balance:
-           print("Insuficent Balance")
-           return
-        self._balance -= amount
-        self._log(f"Withdrawl {amount}")
-        print(f"${amount} nikal gya. Naya balance {self._balance}")
-
-    def _log(self, msg):
-        time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        self.transaction.append(f"[{time}] {msg}")
-
-
-    def show_statement(self):
-        print(f"Statment for {self.name} (A/C : {self.account_no})")
-        for t in self.transaction:
-            print(" ", t)
-
-        print(f"Current Balance : {self._balance}")
-
-    def __str__(self):
-        return f"{self.name} | A/C : {self.account_no} | Balance : {self._balance}"
-
-class SavingAccount(BankAccount):
-    def __init__(self, name, balance=0, interest_rate=4.0):
-        super().__init__(name, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        interest = self._balance * (self.interest_rate / 100)
-        self.deposit(interest)
-        print(f"Interest @{self.interest_rate}% add gya hai.")
-
-if __name__ == "__main__":
-    acc1 = SavingAccount("Zaynul Abdeen", balance=5000, interest_rate=5)
-    acc1.deposit(2000)
-    acc1.withdrawl(1000)
-    acc1.add_interest()
-    acc1.show_statement()
-
-    print(acc1)
-    print("Total account created:", BankAccount.total_account)
- 
-
-
+grades_db = {}
+def manage_grades():
+    print("--- Mini Student Gradebook ---")
+    while True:
+        print("\n1. Add/Update Grade  2. View Grades  3. Exit")
+        choice = input("Enter choice (1-3): ")
+        if choice == '1':
+            name = input("Enter student name: ").strip().title()
+            try:
+                grade = float(input(f"Enter {name}'s grade (0-100): "))
+                if 0 <= grade <= 100:
+                    grades_db[name] = grade
+                    print(f"Saved: {name} -> {grade}")
+                else:
+                    print("Grade must be between 0 and 100.")
+            except ValueError:
+                print("Invalid input! Please enter a number.")
+        elif choice == '2':
+            if not grades_db:
+                print("No grades recorded yet.")
+            else:
+                print("\n--- Class Records ---")
+                for student, gr in grades_db.items():
+                    print(f"Student: {student} | Grade: {gr}")
+                avg = sum(grades_db.values()) / len(grades_db)
+                print(f"Class Average: {avg:.2f}")
+        elif choice == '3':
+            print("Exiting Gradebook...")
+            break
+print("Thank you for using the Gradebook App!")
+manage_grades()
