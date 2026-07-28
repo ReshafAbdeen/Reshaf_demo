@@ -1,31 +1,30 @@
-grades_db = {}
-def manage_grades():
-    print("--- Mini Student Gradebook ---")
-    while True:
-        print("\n1. Add/Update Grade  2. View Grades  3. Exit")
-        choice = input("Enter choice (1-3): ")
-        if choice == '1':
-            name = input("Enter student name: ").strip().title()
-            try:
-                grade = float(input(f"Enter {name}'s grade (0-100): "))
-                if 0 <= grade <= 100:
-                    grades_db[name] = grade
-                    print(f"Saved: {name} -> {grade}")
-                else:
-                    print("Grade must be between 0 and 100.")
-            except ValueError:
-                print("Invalid input! Please enter a number.")
-        elif choice == '2':
-            if not grades_db:
-                print("No grades recorded yet.")
-            else:
-                print("\n--- Class Records ---")
-                for student, gr in grades_db.items():
-                    print(f"Student: {student} | Grade: {gr}")
-                avg = sum(grades_db.values()) / len(grades_db)
-                print(f"Class Average: {avg:.2f}")
-        elif choice == '3':
-            print("Exiting Gradebook...")
-            break
-print("Thank you for using the Gradebook App!")
-manage_grades()
+import time
+def pomodoro_timer():
+    print("--- Pomodoro Timer ---")
+    try:
+        w_time = int(input("Work time (seconds for demo): "))
+        b_time = int(input("Break time (seconds for demo): "))
+        cycles = int(input("Number of cycles: "))
+        for i in range(1, cycles + 1):
+            print(f"\n[Cycle {i}/{cycles}] Work for {w_time}s!")
+            for w in range(w_time, 0, -1):
+                print(f"\rWork time remaining: {w}s   ", end="")
+                time.sleep(1)
+            print("\nBEEP! Time for a break!")
+            if i < cycles:
+                print(f"Take a {b_time}s break.")
+                for b in range(b_time, 0, -1):
+                    print(f"\rBreak time remaining: {b}s   ", end="")
+                    time.sleep(1)
+                print("\nBEEP! Break is over!")
+        print("\nPomodoro session completed! Great focus.")
+    except ValueError:
+        print("\nError: Please enter numbers only!")
+    except KeyboardInterrupt:
+        print("\nTimer stopped by the user.")
+if __name__ == "__main__":
+    pomodoro_timer()
+# Boost your productivity!
+print("Thank you for using the timer.")
+# Goodbye!
+# End of code
