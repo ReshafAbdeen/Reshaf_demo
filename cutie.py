@@ -1,30 +1,32 @@
-def mad_libs_game():
-    print("--- Mad Libs Story Generator ---")
-    print("Provide some words to create a funny story!\n")
-    name = input("Enter a person's name: ").strip().title()
-    adj1 = input("Enter an adjective (e.g., silly, huge): ").strip()
-    noun1 = input("Enter a noun (e.g., car, monkey): ").strip()
-    verb_past = input("Enter a past tense verb: ").strip()
-    place = input("Enter a place: ").strip().title()
-    adj2 = input("Enter another adjective: ").strip()
-    animal = input("Enter an animal: ").strip()
-    food = input("Enter a type of food: ").strip()
-    print("\n" + "="*30)
-    print("Here is your funny story:")
-    print("="*30)
-    story = (
-        f"One day, {name} visited {place}. "
-        f"The weather was {adj1}, perfect for a trip. "
-        f"Suddenly, a {animal} appeared with a {noun1}! "
-        f"{name} got scared and {verb_past} all the way home. "
-        f"To calm down, they ate {adj2} {food}. "
-    )
-    print(story)
-    print("="*30)
+#Digital Stopwatch
+
+import time
+def stop_watch():
+    print("--- Simple Stopwatch ---")
+    print("Press Enter to start, Ctrl+C to stop.")
+    try:
+        input("Ready? Press Enter...")
+        print("Stopwatch started! Running...")
+        start_time = time.time()
+        while True:
+            elapsed = time.time() - start_time
+            mins, secs = divmod(int(elapsed), 60)
+            ms = int((elapsed - int(elapsed)) * 100)
+            timer = f"{mins:02d}:{secs:02d}.{ms:02d}"
+            print(f"\rElapsed Time: {timer}", end="")
+            time.sleep(0.05)
+    except KeyboardInterrupt:
+        print("\n\nStopwatch stopped!")
+        end_time = time.time()
+        total = end_time - start_time
+        m, s = divmod(int(total), 60)
+        ms_final = int((total - int(total)) * 100)
+        print(f"Final Time: {m:02d}:{s:02d}.{ms_final:02d}")
 if __name__ == "__main__":
     while True:
-        mad_libs_game()
-        if input("\nPlay again? (y/n): ").lower() != 'y':
-            print("Thanks for playing!")
+        stop_watch()
+        again = input("\nRun again? (y/n): ")
+        if again.lower() != 'y':
             break
-# Fun and simple Python string formatting example.
+print("Exiting Stopwatch...")
+print("Goodbye!")
