@@ -1,19 +1,32 @@
-#Data Smoother
+# Category-Based Quote Generator
 
-import pandas as pd 
-
-print("\033[1m" + "Advance Pandas : Ping Smoother "+ "\033[0m")
-
-data = {
-    "Match_no" : [1, 2, 3, 4, 5, 6, 7, 8],
-    'Raw_Ping_ms': [25, 30, 180, 22, 28, 500, 35, 49]
+import random
+quotes = {
+    "Motivation": ["Never give up.", "Believe in yourself.", "Keep pushing forward."],
+    "Life": ["Life is beautiful.", "Enjoy every moment.", "Smile often."],
+    "Coding": ["Code never lies.", "Bugs are features.", "Keep calm and code on."]
 }
-
-df = pd.DataFrame(data)
-print("--Raw Data (With Lag Spike)")
-print(df)
-
-
-df['Smoother_Ping (3-Match Avg)'] = df['Raw_Ping_ms'].rolling(window=3).mean()
-print("\n---Data After Rolling Average Magic---")
-print(df)
+def generate_quote():
+    print("--- Random Quote Generator ---")
+    categories = list(quotes.keys())
+    while True:
+        print("\nCategories:")
+        for i, cat in enumerate(categories, 1):
+            print(f"{i}. {cat}")
+        choice = input("Choose a category number (or 'q' to quit): ")
+        if choice.lower() == 'q':
+            print("Exiting Quote Generator...")
+            break
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(categories):
+                cat = categories[idx]
+                quote = random.choice(quotes[cat])
+                print(f"\n-> {cat}: \"{quote}\"")
+            else:
+                print("Invalid number!")
+        except ValueError:
+            print("Please enter a number!")
+if __name__ == "__main__":
+    generate_quote()
+print("Have a great day!")
