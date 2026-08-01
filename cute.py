@@ -1,30 +1,32 @@
-cart = {}
-def shopping_cart():
-    print("--- Online Shopping Cart ---")
+#ATM Machine Simulator
+
+def atm_simulator():
+    balance = 1000.0
+    print("--- Welcome to Python Bank ATM ---")
+    if input("Enter your 4-digit PIN (1234): ") != "1234":
+        return print("Incorrect PIN! Access Denied.")
     while True:
-        print("\n1. Add Item  2. Remove Item  3. View Cart  4. Checkout")
-        choice = input("Enter choice (1-4): ")
+        print("\n1. Balance  2. Deposit  3. Withdraw  4. Exit")
+        choice = input("Select an option (1-4): ")
         if choice == '1':
-            item = input("Item name: ").title()
-            try:
-                price = float(input(f"Price: $"))
-                cart[item] = cart.get(item, 0) + price
-                print("Item added!")
-            except ValueError:
-                print("Invalid price!")
+            print(f"Current Balance: ${balance:.2f}")
         elif choice == '2':
-            item = input("Item to remove: ").title()
-            if item in cart:
-                del cart[item]
-                print("Item removed.")
-            else:
-                print("Not in cart.")
+            try:
+                amt = float(input("Deposit amount: $"))
+                if amt > 0:
+                    balance += amt
+                    print(f"New Balance: ${balance:.2f}")
+            except ValueError:
+                print("Invalid input!")
         elif choice == '3':
-            print("\n--- Cart ---")
-            for k, v in cart.items():
-                print(f"{k}: ${v:.2f}")
+            try:
+                amt = float(input("Withdraw amount: $"))
+                if 0 < amt <= balance:
+                    balance -= amt
+                    print(f"New Balance: ${balance:.2f}")
+                else:
+                    print("Insufficient funds!")
+            except ValueError:
+                print("Invalid input!")
         elif choice == '4':
-            print(f"\nTotal: ${sum(cart.values()):.2f}\nThanks!")
             break
-if __name__ == "__main__":
-    shopping_cart()
