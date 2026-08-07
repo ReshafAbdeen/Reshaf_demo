@@ -1,59 +1,30 @@
-import random
-def play_rpg():
-    print("--- Mini Text RPG ---")
-    hp, gold = 20, 0
-    while hp > 0:
-        print(f"\nHP: {hp} | Gold: {gold}")
-        print("1. Explore  2. Rest  3. Quit")
-        choice = input("Choose action: ")
-        if choice == '3':
+menu = {
+    "A1": {"name": "Cola", "price": 1.50},
+    "A2": {"name": "Chips", "price": 2.00},
+    "B1": {"name": "Candy", "price": 1.00},
+    "B2": {"name": "Water", "price": 1.25}
+}
+def vending_machine():
+    print("--- Virtual Vending Machine ---")
+    for code, item in menu.items():
+        print(f"{code}: {item['name']} - ${item['price']:.2f}")
+    balance = 0.0
+    while True:
+        print(f"\nCurrent Balance: ${balance:.2f}")
+        choice = input("Enter code (or 'd' deposit, 'q' quit): ").upper()
+        if choice == 'Q':
+            if balance > 0: print(f"Refunding ${balance:.2f}")
             break
-        elif choice == '2':
-            heal = random.randint(2, 5)
-            hp += heal
-            print(f"You rested and gained {heal} HP.")
-        elif choice == '1':
-            event = random.choice(['monster', 'treasure', 'nothing'])
-            if event == 'monster':
-                dmg = random.randint(3, 8)
-                hp -= dmg
-                print(f"A monster attacked! You lost {dmg} HP.")
-            elif event == 'treasure':
-                coin = random.randint(10, 20)
-                gold += coin
-                print(f"You found a chest with {coin} gold!")
-            else:
-                print("You wandered safely but found nothing.")
-        else:
-            print("Invalid choice!")
-    print(f"\nGame Over! Final Gold: {gold}")
-play_rpg()import random
-def play_rpg():
-    print("--- Mini Text RPG ---")
-    hp, gold = 20, 0
-    while hp > 0:
-        print(f"\nHP: {hp} | Gold: {gold}")
-        print("1. Explore  2. Rest  3. Quit")
-        choice = input("Choose action: ")
-        if choice == '3':
-            break
-        elif choice == '2':
-            heal = random.randint(2, 5)
-            hp += heal
-            print(f"You rested and gained {heal} HP.")
-        elif choice == '1':
-            event = random.choice(['monster', 'treasure', 'nothing'])
-            if event == 'monster':
-                dmg = random.randint(3, 8)
-                hp -= dmg
-                print(f"A monster attacked! You lost {dmg} HP.")
-            elif event == 'treasure':
-                coin = random.randint(10, 20)
-                gold += coin
-                print(f"You found a chest with {coin} gold!")
-            else:
-                print("You wandered safely but found nothing.")
-        else:
-            print("Invalid choice!")
-    print(f"\nGame Over! Final Gold: {gold}")
-play_rpg()
+        elif choice == 'D':
+            try:
+                amt = float(input("Insert money: $"))
+                if amt > 0: balance += amt
+            except ValueError:
+                print("Invalid amount!")
+        elif choice in menu:
+            if balance >= menu[choice]['price']:
+                balance -= menu[choice]['price']
+                print(f"Dispensing {menu[choice]['name']}! Enjoy.")
+            else: print("Not enough money! Deposit more.")
+        else: print("Invalid code! Try again.")
+vending_machine()
