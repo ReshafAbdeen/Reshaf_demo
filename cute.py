@@ -1,30 +1,30 @@
-print("Hello Universe")import string
-def check_password(password):
-    score = 0
-    if len(password) >= 8: score += 1
-    if any(c.islower() for c in password): score += 1
-    if any(c.isupper() for c in password): score += 1
-    if any(c.isdigit() for c in password): score += 1
-    if any(c in string.punctuation for c in password): score += 1
-    return score
-print("--- Password Strength Checker ---")
-while True:
-    pwd = input("\nEnter password (or 'q' to quit): ")
-    if pwd == 'q':
-        print("Exiting tool...")
-        break
-    s = check_password(pwd)
-    print("Strength: ", end="")
-    if s == 5:
-        print("Very Strong! 💪")
-    elif s == 4:
-        print("Strong! 👍")
-    elif s >= 2:
-        print("Weak! ⚠️")
-    else:
-        print("Very Weak! ❌")
-    print(f"Score: {s}/5")
-# Security matters
-# Use a password manager
+import random
+import time
+responses = [
+    "It is certain.", "Without a doubt.", "You may rely on it.",
+    "Yes, definitely.", "It is decidedly so.", "As I see it, yes.",
+    "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
+    "Reply hazy, try again.", "Ask again later.", "Better not tell you now.",
+    "Cannot predict now.", "Concentrate and ask again.",
+    "Don't count on it.", "My reply is no.", "My sources say no.",
+    "Outlook not so good.", "Very doubtful."
+]
+def magic_8_ball():
+    print("--- Magic 8 Ball Fortune Teller ---")
+    while True:
+        question = input("\nAsk a Yes/No question (or 'q' to quit): ")
+        if question.lower() == 'q':
+            print("The spirits bid you farewell...")
+            break
+        if not question.strip():
+            print("You must ask a question!")
+            continue
+        print("Thinking", end="")
+        for _ in range(3):
+            time.sleep(0.5)
+            print(".", end="", flush=True)
+        print(f"\nAnswer: {random.choice(responses)}")
+if __name__ == "__main__":
+    magic_8_ball()
+# Trust the magic 8 ball!
 print("Goodbye!")
-# End of Script
