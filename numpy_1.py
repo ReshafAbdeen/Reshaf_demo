@@ -1,32 +1,30 @@
-# Category-Based Quote Generator
-
 import random
-quotes = {
-    "Motivation": ["Never give up.", "Believe in yourself.", "Keep pushing forward."],
-    "Life": ["Life is beautiful.", "Enjoy every moment.", "Smile often."],
-    "Coding": ["Code never lies.", "Bugs are features.", "Keep calm and code on."]
-}
-def generate_quote():
-    print("--- Random Quote Generator ---")
-    categories = list(quotes.keys())
-    while True:
-        print("\nCategories:")
-        for i, cat in enumerate(categories, 1):
-            print(f"{i}. {cat}")
-        choice = input("Choose a category number (or 'q' to quit): ")
-        if choice.lower() == 'q':
-            print("Exiting Quote Generator...")
-            break
-        try:
-            idx = int(choice) - 1
-            if 0 <= idx < len(categories):
-                cat = categories[idx]
-                quote = random.choice(quotes[cat])
-                print(f"\n-> {cat}: \"{quote}\"")
-            else:
-                print("Invalid number!")
-        except ValueError:
-            print("Please enter a number!")
+def guess_the_word():
+    words = ["python", "hacker", "script", "server", "coding"]
+    word = random.choice(words)
+    guessed = ["_"] * len(word)
+    attempts = 6
+    print("--- Guess the Word Game ---")
+    while attempts > 0 and "_" in guessed:
+        print(f"\nWord: {' '.join(guessed)}")
+        print(f"Attempts left: {attempts}")
+        guess = input("Guess a letter: ").lower()
+        if len(guess) != 1 or not guess.isalpha():
+            print("Enter a single valid letter!")
+            continue
+        if guess in word:
+            for i, char in enumerate(word):
+                if char == guess:
+                    guessed[i] = guess
+            print("Correct guess!")
+        else:
+            attempts -= 1
+            print("Wrong guess!")
+    if "_" not in guessed:
+        print(f"\nCongratulations! Word was '{word}'.")
+    else:
+        print(f"\nGame Over! The word was '{word}'.")
 if __name__ == "__main__":
-    generate_quote()
-print("Have a great day!")
+    guess_the_word()
+# End of Game
+print("Play again later!")
