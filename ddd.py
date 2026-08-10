@@ -1,29 +1,30 @@
-# The def Keyword (Custom Functions)
-
-print("\033[1m" + "===  Valorant AI: Rank Predictor Function ===" + "\033[0m\n")
-
-def predict_rank(Player_name, kills, deaths):
-    if deaths == 0:
-        deaths == 1
-
-    kd_ratio = round(kills / deaths, 2)
-
-    if kd_ratio >= 2.5:
-        rank = "Radiant"
-    elif kd_ratio >= 1.5:
-        rank = "Ascendant"
-    elif kd_ratio >= 1:
-        rank = "Gold"
-    else:
-        rank = "Iron (Thoda Aim sahi karo bhai)"
-
-    report = f"Player {Player_name} | K/D : {kd_ratio} | Predict Rank : {rank}"
-    return report 
-
-player1 = predict_rank("Zaynul", 12, 2)
-player2 = predict_rank("Shoib", 4, 5)
-player3 = predict_rank("Varish", 11, 4)
-
-print(player1)
-print(player2)
-print(player3)
+import time
+import sys
+def display_progress_bar():
+    print("--- Terminal Progress Bar ---")
+    total_tasks = 50
+    bar_length = 30
+    print("Starting task processing...\n")
+    for i in range(total_tasks + 1):
+        percent = 100 * (i / float(total_tasks))
+        filled = int(bar_length * i // total_tasks)
+        bar = '█' * filled + '-' * (bar_length - filled)
+        sys.stdout.write(f"\rProgress: |{bar}| {percent:.1f}% Complete")
+        sys.stdout.flush()
+        time.sleep(0.05)
+    print("\n\nTask processing finished successfully!")
+def spinning_cursor():
+    print("\nLoading data, please wait...")
+    spinner = ['|', '/', '-', '\\']
+    for _ in range(20):
+        for char in spinner:
+            sys.stdout.write(f"\rLoading... {char}")
+            sys.stdout.flush()
+            time.sleep(0.1)
+    print("\rLoading... Done!   ")
+if __name__ == "__main__":
+    display_progress_bar()
+    spinning_cursor()
+# CLI UI elements make apps look pro.
+print("All tasks completed.")
+print("Goodbye!")
