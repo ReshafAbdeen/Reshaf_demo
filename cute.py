@@ -1,30 +1,30 @@
-import random
-def team_generator():
-    print("--- Random Team Generator ---")
-    names_input = input("Enter names separated by commas:\n")
-    names = [n.strip() for n in names_input.split(",") if n.strip()]
-    if not names:
-        print("No valid names entered!")
-        return
-    try:
-        num_teams = int(input("How many teams do you want? "))
-        if num_teams < 1 or num_teams > len(names):
-            print("Invalid number of teams!")
-            return
-        random.shuffle(names)
-        teams = {i: [] for i in range(1, num_teams + 1)}
-        for i, name in enumerate(names):
-            teams[(i % num_teams) + 1].append(name)
-        print("\n--- Generated Teams ---")
-        for team_num, members in teams.items():
-            print(f"Team {team_num}: {', '.join(members)}")
-    except ValueError:
-        print("Please enter a valid number!")
-if __name__ == "__main__":
+import os
+import datetime
+def diary_app():
+    print("--- Personal Diary App ---")
+    filename = "my_diary.txt"
     while True:
-        team_generator()
-        again = input("\nGenerate again? (y/n): ")
-        if again.lower() != 'y':
+        print("\n1. Write Entry  2. Read Diary  3. Exit")
+        choice = input("Choose option (1-3): ")
+        if choice == '1':
+            entry = input("Write your thought: ")
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            with open(filename, 'a') as f:
+                f.write(f"[{timestamp}] {entry}\n")
+            print("Entry saved successfully!")
+        elif choice == '2':
+            if os.path.exists(filename):
+                print("\n--- Your Diary Entries ---")
+                with open(filename, 'r') as f:
+                    print(f.read().strip())
+                print("-" * 26)
+            else:
+                print("Diary is empty. Write something first!")
+        elif choice == '3':
+            print("Exiting Diary App...")
             break
-print("Have fun with your teams!")
+        else:
+            print("Invalid choice!")
+if __name__ == "__main__":
+    diary_app()
 print("Goodbye!")
