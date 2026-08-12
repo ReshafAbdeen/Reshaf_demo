@@ -1,30 +1,30 @@
-import os
-def manage_notes():
-    print("--- Quick Notes App ---")
-    file_name = "my_notes.txt"
+def split_bill():
+    print("--- Tip Calculator & Bill Splitter ---")
     while True:
-        print("\n1. Read Notes  2. Add Note  3. Clear  4. Exit")
-        choice = input("Choose (1-4): ")
-        if choice == '1':
-            if os.path.exists(file_name):
-                with open(file_name, 'r') as f:
-                    content = f.read()
-                    print("\n--- Your Notes ---")
-                    print(content if content else "Empty!")
-            else:
-                print("No notes found. Add one first!")
-        elif choice == '2':
-            note = input("Write your note: ")
-            with open(file_name, 'a') as f:
-                f.write(note + "\n")
-            print("Note saved successfully!")
-        elif choice == '3':
-            open(file_name, 'w').close()
-            print("All notes cleared!")
-        elif choice == '4':
-            print("Exiting Notes App...")
+        try:
+            total_bill = float(input("\nEnter total bill amount: $"))
+            if total_bill <= 0:
+                print("Bill must be greater than zero.")
+                continue
+            tip_percent = float(input("Enter tip percentage (e.g., 10, 15, 20): "))
+            people = int(input("How many people are splitting the bill? "))
+            if people <= 0:
+                print("Number of people must be at least 1.")
+                continue
+            tip_amount = total_bill * (tip_percent / 100)
+            grand_total = total_bill + tip_amount
+            per_person = grand_total / people
+            print("\n--- Bill Summary ---")
+            print(f"Initial Bill: ${total_bill:.2f}")
+            print(f"Total Tip: ${tip_amount:.2f}")
+            print(f"Grand Total: ${grand_total:.2f}")
+            print(f"Each Person Pays: ${per_person:.2f}")
+            print("--------------------")
+        except ValueError:
+            print("Invalid input! Please enter numbers only.")
+        again = input("Calculate another bill? (y/n): ")
+        if again.lower() != 'y':
+            print("Exiting Calculator...")
             break
-        else:
-            print("Invalid choice, try again.")
 if __name__ == "__main__":
-    manage_notes()
+    split_bill()
