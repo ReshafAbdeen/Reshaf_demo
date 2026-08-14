@@ -1,30 +1,23 @@
-def split_bill():
-    print("--- Tip Calculator & Bill Splitter ---")
-    while True:
-        try:
-            total_bill = float(input("\nEnter total bill amount: $"))
-            if total_bill <= 0:
-                print("Bill must be greater than zero.")
-                continue
-            tip_percent = float(input("Enter tip percentage (e.g., 10, 15, 20): "))
-            people = int(input("How many people are splitting the bill? "))
-            if people <= 0:
-                print("Number of people must be at least 1.")
-                continue
-            tip_amount = total_bill * (tip_percent / 100)
-            grand_total = total_bill + tip_amount
-            per_person = grand_total / people
-            print("\n--- Bill Summary ---")
-            print(f"Initial Bill: ${total_bill:.2f}")
-            print(f"Total Tip: ${tip_amount:.2f}")
-            print(f"Grand Total: ${grand_total:.2f}")
-            print(f"Each Person Pays: ${per_person:.2f}")
-            print("--------------------")
-        except ValueError:
-            print("Invalid input! Please enter numbers only.")
-        again = input("Calculate another bill? (y/n): ")
-        if again.lower() != 'y':
-            print("Exiting Calculator...")
-            break
-if __name__ == "__main__":
-    split_bill()
+import time
+from functools import wraps
+
+# The decorator function
+def time_execution(func):
+    """A decorator that prints how long a function took to run."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        
+        print(f"[{func.__name__}] executed in {end_time - start_time:.4f} seconds")
+        return result
+    return wrapper
+
+# Applying the decorator
+@time_execution
+def compute_squares(n):
+    return [i * i for i in range(n)]
+
+# When you call this, the decorator automatically times it
+compute_squares(500_000)
