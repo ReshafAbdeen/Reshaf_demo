@@ -1,15 +1,24 @@
-def fibonacci_generator(limit):
-    """Yields Fibonacci numbers up to a specified limit."""
-    a, b = 0, 1
-    while a <= limit:
-        yield a
-        a, b = b, a + b
+import concurrent.futures
+import time
 
-# The generator object is created, but no numbers are computed yet
-fib_seq = fibonacci_generator(1000)
+def fake_download(file_id):
+    """Simulates a task that takes time, like downloading a file."""
+    print(f"Starting download for file {file_id}...")
+    time.sleep(1.5) # Simulating network delay
+    return f"File {file_id} data"
 
-# The values are computed one by one as the loop requests them
-print("Fibonacci sequence up to 1000:")
-for num in fib_seq:
-    print(num, end=" ")
-print()
+file_ids = [1, 2, 3, 4, 5]
+
+start_time = time.time()
+
+# Using a ThreadPoolExecutor to run downloads simultaneously
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    # Map applies the function to every item in the list concurrently
+    results = executor.map(fake_download, file_ids)
+
+    for result in results:
+        print(f"Completed: {result}")
+
+end_time = time.time()
+print(f"Total time taken: {end_time - start_time:.2f} seconds") 
+# Will take ~1.5 seconds instead of 7.5 seconds!
