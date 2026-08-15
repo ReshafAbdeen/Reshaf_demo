@@ -1,23 +1,24 @@
-import time
-from functools import wraps
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-# The decorator function
-def time_execution(func):
-    """A decorator that prints how long a function took to run."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        
-        print(f"[{func.__name__}] executed in {end_time - start_time:.4f} seconds")
-        return result
-    return wrapper
+    # Defines what is printed when you call str(Vector) or print(Vector)
+    def __str__(self):
+        return f"Vector({self.x}, {self.y})"
 
-# Applying the decorator
-@time_execution
-def compute_squares(n):
-    return [i * i for i in range(n)]
+    # Overrides the '+' operator
+    def __add__(self, other):
+        if not isinstance(other, Vector):
+            raise TypeError("Can only add two Vectors together")
+        return Vector(self.x + other.x, self.y + other.y)
 
-# When you call this, the decorator automatically times it
-compute_squares(500_000)
+    # Overrides the '==' operator
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+v1 = Vector(2, 4)
+v2 = Vector(3, 1)
+
+print(f"Addition: {v1} + {v2} = {v1 + v2}")
+print(f"Equality Check: {v1 == Vector(2, 4)}")
