@@ -1,21 +1,19 @@
-from contextlib import contextmanager
-import time
+from collections import Counter, defaultdict
 
-@contextmanager
-def temporary_timer(label):
-    """A context manager that times a specific block of code."""
-    print(f"Starting block: {label}")
-    start = time.time()
-    try:
-        # Code inside the 'with' block runs here
-        yield 
-    finally:
-        # This always runs, even if the block throws an error
-        end = time.time()
-        print(f"Finished block: {label} (Took {end - start:.3f}s)\n")
+# --- Counter: Easily count occurrences of items ---
+words = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple']
+word_counts = Counter(words)
 
-# Using the custom context manager
-with temporary_timer("Heavy Computation"):
-    # Everything inside this block is timed
-    total = sum(x**2 for x in range(1_000_000))
-    print(f"Computation complete. Total digits: {len(str(total))}")
+print(f"Top 2 words: {word_counts.most_common(2)}")
+# Output: Top 2 words: [('apple', 3), ('banana', 2)]
+
+# --- defaultdict: Handle missing dictionary keys gracefully ---
+# Instead of throwing a KeyError, it automatically creates a default value (e.g., an empty list)
+student_grades = [('Alice', 85), ('Bob', 90), ('Alice', 92), ('Charlie', 78)]
+grade_book = defaultdict(list)
+
+for name, grade in student_grades:
+    grade_book[name].append(grade)
+
+print("Grade Book:", dict(grade_book))
+# Output: {'Alice': [85, 92], 'Bob': [90], 'Charlie': [78]}
