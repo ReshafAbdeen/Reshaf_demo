@@ -1,19 +1,10 @@
-from collections import Counter, defaultdict
+import matplotlib.pyplot as plt
 
-# --- Counter: Easily count occurrences of items ---
-words = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple']
-word_counts = Counter(words)
-
-print(f"Top 2 words: {word_counts.most_common(2)}")
-# Output: Top 2 words: [('apple', 3), ('banana', 2)]
-
-# --- defaultdict: Handle missing dictionary keys gracefully ---
-# Instead of throwing a KeyError, it automatically creates a default value (e.g., an empty list)
-student_grades = [('Alice', 85), ('Bob', 90), ('Alice', 92), ('Charlie', 78)]
-grade_book = defaultdict(list)
-
-for name, grade in student_grades:
-    grade_book[name].append(grade)
-
-print("Grade Book:", dict(grade_book))
-# Output: {'Alice': [85, 92], 'Bob': [90], 'Charlie': [78]}
+# Plotting Cost vs Intercept (b)
+plt.figure(figsize=(9, 5))
+plt.plot(b_input, cost_input, color='red', linewidth=2)
+plt.title('Cost Function Curve (b vs Cost)')
+plt.xlabel('Intercept (b)')
+plt.ylabel('Cost / Loss')
+plt.grid(True)
+plt.show()
