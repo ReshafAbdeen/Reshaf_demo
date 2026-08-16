@@ -1,24 +1,17 @@
-import concurrent.futures
-import time
+import numpy as np
 
-def fake_download(file_id):
-    """Simulates a task that takes time, like downloading a file."""
-    print(f"Starting download for file {file_id}...")
-    time.sleep(1.5) # Simulating network delay
-    return f"File {file_id} data"
+# Intercept values range
+b_input = np.linspace(-150, 150, 100)
+cost_input = []
 
-file_ids = [1, 2, 3, 4, 5]
+# X aur y ko reset karke clean 1D array banayein
+X_arr = np.array(X).ravel()
+y_arr = np.array(y).ravel()
 
-start_time = time.time()
+# Single Loop (No nested j-loop)
+for i in range(len(b_input)):
+    # Direct vectorized cost calculation
+    this_cost = np.sum((y_arr - m * X_arr - b_input[i]) ** 2)
+    cost_input.append(this_cost)
 
-# Using a ThreadPoolExecutor to run downloads simultaneously
-with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    # Map applies the function to every item in the list concurrently
-    results = executor.map(fake_download, file_ids)
-
-    for result in results:
-        print(f"Completed: {result}")
-
-end_time = time.time()
-print(f"Total time taken: {end_time - start_time:.2f} seconds") 
-# Will take ~1.5 seconds instead of 7.5 seconds!
+print("Success! Calculated", len(cost_input), "cost values.")
