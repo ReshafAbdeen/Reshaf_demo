@@ -1,36 +1,38 @@
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from IPython.display import HTML
+import plotly.graph_objects as go
 
-# Figure aur Axes setup
-fig, ax = plt.subplots(figsize=(9, 5))
+# 1. Base 3D Surface Plot
+fig = go.Figure(data=[
+    go.Surface(
+        z=Z, x=M, y=B, 
+        colorscale='Viridis', 
+        opacity=0.8,
+        name='Cost Surface'
+    )
+])
 
-# Static Cost Curve plot karein
-ax.plot(b_input, cost_input, color='blue', label='Cost Function')
-ax.set_xlabel('Intercept (b)')
-ax.set_ylabel('Cost')
-ax.set_title('Gradient Descent Convergence on Cost Curve')
+# 2. Gradient Descent Trajectory (3D Line + Points)
+fig.add_trace(
+    go.Scatter3d(
+        x=all_m, 
+        y=all_b, 
+        z=all_cost,
+        mode='lines+markers',
+        marker=dict(size=5, color='red', symbol='circle'),
+        line=dict(color='red', width=4),
+        name='GD Trajectory'
+    )
+)
 
-# Moving point initialization (Red Dot)
-point, = ax.plot([], [], 'ro', markersize=8, label='Current b step')
-line, = ax.plot([], [], 'r--', alpha=0.6)
+# 3. Layout Configuration
+fig.update_layout(
+    title='Gradient Descent Trajectory on 3D Cost Surface',
+    scene=dict(
+        xaxis_title='Slope (m)',
+        yaxis_title='Intercept (b)',
+        zaxis_title='Cost'
+    ),
+    width=850,
+    height=650
+)
 
-# Data containers
-xdata, ydata = [], []
-
-def animate(i):
-    label = f'Epoch {i + 1}'
-    xdata.append(all_b[i])
-    ydata.append(all_cost[i])
-    
-    # Point aur line trajectory update
-    point.set_data([all_b[i]], [all_cost[i]])
-    line.set_data(xdata, ydata)
-    ax.set_xlabel(f'Intercept (b) - {label}')
-    return point, line
-
-# Animation object
-anim = animation.FuncAnimation(fig, animate, frames=len(all_b), interval=400, repeat=False)
-
-# Notebook me inline video render karne ke liye:
-HTML(anim.to_jshtml())
+fig.show()
