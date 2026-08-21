@@ -1,30 +1,39 @@
-import random
-def guess_the_word():
-    words = ["python", "hacker", "script", "server", "coding"]
-    word = random.choice(words)
-    guessed = ["_"] * len(word)
-    attempts = 6
-    print("--- Guess the Word Game ---")
-    while attempts > 0 and "_" in guessed:
-        print(f"\nWord: {' '.join(guessed)}")
-        print(f"Attempts left: {attempts}")
-        guess = input("Guess a letter: ").lower()
-        if len(guess) != 1 or not guess.isalpha():
-            print("Enter a single valid letter!")
-            continue
-        if guess in word:
-            for i, char in enumerate(word):
-                if char == guess:
-                    guessed[i] = guess
-            print("Correct guess!")
+class BankAccount:
+    def __init__(self, owner: str, balance: float = 0.0):
+        self.owner = owner
+        self._balance = balance  # Protected attribute
+
+    def deposit(self, amount: float) -> None:
+        if amount > 0:
+            self._balance += amount
+            print(f"Deposited ₹{amount}. New Balance: ₹{self._balance}")
         else:
-            attempts -= 1
-            print("Wrong guess!")
-    if "_" not in guessed:
-        print(f"\nCongratulations! Word was '{word}'.")
-    else:
-        print(f"\nGame Over! The word was '{word}'.")
-if __name__ == "__main__":
-    guess_the_word()
-# End of Game
-print("Play again later!")
+            print("Invalid deposit amount!")
+
+    def withdraw(self, amount: float) -> None:
+        if 0 < amount <= self._balance:
+            self._balance -= amount
+            print(f"Withdrew ₹{amount}. Remaining Balance: ₹{self._balance}")
+        else:
+            print("Insufficient balance or invalid amount!")
+
+    def get_balance(self) -> float:
+        return self._balance
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner: str, balance: float = 0.0, interest_rate: float = 0.04):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def apply_interest((self) -> None:
+        interest = self._balance * self.interest_rate
+        self._balance += interest
+        print(f"Interest added: ₹{interest}. New Balance: ₹{self._balance}")
+
+
+# Usage
+acc = SavingsAccount("Rahul", 10000.0)
+acc.deposit(2000)
+acc.apply_interest()
+acc.withdraw(3000)
