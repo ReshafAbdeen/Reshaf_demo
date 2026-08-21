@@ -1,24 +1,19 @@
-class Vector:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+import time
+from functools import wraps
 
-    # Defines what is printed when you call str(Vector) or print(Vector)
-    def __str__(self):
-        return f"Vector({self.x}, {self.y})"
+def time_it(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"Function '{func.__name__}' took {(end_time - start_time):.4f} seconds to execute.")
+        return result
+    return wrapper
 
-    # Overrides the '+' operator
-    def __add__(self, other):
-        if not isinstance(other, Vector):
-            raise TypeError("Can only add two Vectors together")
-        return Vector(self.x + other.x, self.y + other.y)
+@time_it
+def compute_squares(n: int) -> list:
+    return [i**2 for i in range(n)]
 
-    # Overrides the '==' operator
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-v1 = Vector(2, 4)
-v2 = Vector(3, 1)
-
-print(f"Addition: {v1} + {v2} = {v1 + v2}")
-print(f"Equality Check: {v1 == Vector(2, 4)}")
+# Usage
+squares = compute_squares(1_000_000)
