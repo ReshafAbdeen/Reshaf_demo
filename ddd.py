@@ -1,32 +1,20 @@
-import numpy as np
-import plotly.graph_objects as go
+import requests
 
-# 1. Parameter Grid Create karein (m aur b)
-m_vals = np.linspace(-100, 100, 50)
-b_vals = np.linspace(-150, 150, 50)
-M, B = np.meshgrid(m_vals, b_vals)
+def fetch_user_posts(user_id: int):
+    url = f"https://jsonplaceholder.typicode.com/posts?userId={user_id}"
+    
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()  # Check for HTTP errors (4xx, 5xx)
+        posts = response.json()
+        
+        print(f"Fetched {len(posts)} posts for User ID {user_id}:\n")
+        for post in posts[:3]:  # Top 3 posts
+            print(f"Title: {post['title']}")
+            print(f"Body: {post['body'][:50]}...\n")
 
-# 2. Har (m, b) pair ke liye Cost calculate karein
-X_arr = np.array(X).ravel()
-y_arr = np.array(y).ravel()
+    except requests.exceptions.RequestException as e:
+        print(f"API Error: {e}")
 
-Z = np.zeros(M.shape)
-for i in range(M.shape[0]):
-    for j in range(M.shape[1]):
-        Z[i, j] = np.sum((y_arr - (M[i, j] * X_arr + B[i, j])) ** 2)
-
-# 3. Interactive 3D Surface Plot Render karein
-fig = go.Figure(data=[go.Surface(z=Z, x=M, y=B, colorscale='Viridis')])
-
-fig.update_layout(
-    title='3D Cost Surface (m vs b vs Cost)',
-    scene=dict(
-        xaxis_title='Slope (m)',
-        yaxis_title='Intercept (b)',
-        zaxis_title='Cost'
-    ),
-    width=800,
-    height=600
-)
-
-fig.show()
+# Usage
+fetch_user_posts(user_id=1)
