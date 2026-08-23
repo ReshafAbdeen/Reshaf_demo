@@ -1,20 +1,21 @@
-import requests
+import concurrent.futures
+import urllib.request
 
-def fetch_user_posts(user_id: int):
-    url = f"https://jsonplaceholder.typicode.com/posts?userId={user_id}"
-    
+URLS = [
+    'https://www.python.org',
+    'https://www.google.com',
+    'https://www.github.com'
+]
+
+def check_website(url: str) -> str:
     try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()  # Check for HTTP errors (4xx, 5xx)
-        posts = response.json()
-        
-        print(f"Fetched {len(posts)} posts for User ID {user_id}:\n")
-        for post in posts[:3]:  # Top 3 posts
-            print(f"Title: {post['title']}")
-            print(f"Body: {post['body'][:50]}...\n")
+        with urllib.request.urlopen(url, timeout=5) as conn:
+            return f"{url}: Status Code {conn.getcode()}"
+    except Exception as e:
+        return f"{url}: Failed ({e})"
 
-    except requests.exceptions.RequestException as e:
-        print(f"API Error: {e}")
-
-# Usage
-fetch_user_posts(user_id=1)
+# ThreadPoolExecutor to run checks in parallel
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+    results = executor.map(check_website, URLS)
+    for result in results:
+        print(result)
