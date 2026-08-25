@@ -1,36 +1,35 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List
+import pandas as pd
+import numpy as np
 
-app = FastAPI(title="Item Management API")
+# Sample Messy Sales Data Frame
+data = {
+    'Transaction_ID': [101, 102, 103, 104, 105, 106],
+    'Region': ['North', 'South', 'North', 'East', np.nan, 'West'],
+    'Sales': [2500, 1800, np.nan, 3200, 4100, 2900],
+    'Quantity': [5, 3, 4, np.nan, 6, 2],
+    'Discount_Pct': [10, 5, 0, 15, 20, 0]
+}
 
-# Pydantic Data Model for Request Body Validation
-class Item(BaseModel):
-    id: int
-    name: str = Field(..., min_length=2, example="Laptop")
-    price: float = Field(..., gt=0, example=50000.0)
-    in_stock: bool = True
+df = pd.DataFrame(data)
 
-# In-Memory Database
-db: List[Item] = []
+# 1. Missing Values Handle Karein
+df['Region'] = df['Region'].fillna('Unknown')
+df['Sales'] = df['Sales'].fillna(df['Sales'].median())
+df['Quantity'] = df['Quantity'].fillna(1)
 
-@app.get("/items", response_model=List[Item])
-def get_items():
-    return db
+# 2. Vectorized Feature Creation (NumPy Conditionals)
+df['Unit_Price'] = df['Sales'] / df['Quantity']
+df['Performance'] = np.where(df['Sales'] > 3000, 'High', 'Standard')
 
-@app.post("/items", status_code=201)
-def add_item(item: Item):
-    for existing_item in db:
-        if existing_item.id == item.id:
-            raise HTTPException(status_code=400, detail="Item ID already exists!")
-    db.append(item)
-    return {"message": "Item added successfully!", "item": item}
+# 3. GroupBy Aggregation
+summary = df.groupby('Region').agg(
+    Total_Sales=('Sales', 'sum'),
+    Avg_Unit_Price=('Unit_Price', 'mean'),
+    Transaction_Count=('Transaction_ID', 'count')
+).reset_index()
 
-@app.get("/items/{item_id}")
-def get_item(item_id: int):
-    for item in db:
-        if item.id == item_id:
-            return item
-    raise HTTPException(status_code=404, detail="Item not found!")
+print("--- Cleaned DataFrame ---")
+print(df[['Transaction_ID', 'Region', 'Sales', 'Performance']])
 
-# Note: Terminal me `uvicorn filename:app --reload` se run kiya jata hai.
+print("\n--- Region Summary ---")
+print(summary)
