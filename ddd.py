@@ -1,21 +1,31 @@
-import concurrent.futures
-import urllib.request
+import pytest
 
-URLS = [
-    'https://www.python.org',
-    'https://www.google.com',
-    'https://www.github.com'
-]
+# Target Functions to Test
+def calculate_discount(price: float, discount_pct: float) -> float:
+    if price < 0 or not (0 <= discount_pct <= 100):
+        raise ValueError("Invalid price or discount percentage")
+    return round(price * (1 - discount_pct / 100), 2)
 
-def check_website(url: str) -> str:
-    try:
-        with urllib.request.urlopen(url, timeout=5) as conn:
-            return f"{url}: Status Code {conn.getcode()}"
-    except Exception as e:
-        return f"{url}: Failed ({e})"
+# 1. Test Fixture Setup
+@pytest.fixture
+def sample_product():
+    return {"name": "Laptop", "price": 50000.0}
 
-# ThreadPoolExecutor to run checks in parallel
-with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-    results = executor.map(check_website, URLS)
-    for result in results:
-        print(result)
+# 2. Basic Test Case
+def test_valid_discount(sample_product):
+    final_price = calculate_discount(sample_product["price"], 10)
+    assert final_price == 45000.0
+
+# 3. Parameterized Testing (Multiple Edge Cases)
+@pytest.mark.parametrize("price, discount, expected", [
+    (100.0, 0, 100.0),
+    (200.0, 50, 100.0),
+    (99.99, 10, 89.99),
+])
+def test_discount_variations(price, discount, expected):
+    assert calculate_discount(price, discount) == expected
+
+# 4. Exception Testing
+def test_invalid_discount_raises_error():
+    with pytest.raises(ValueError):
+        calculate_discount(100.0, 150)  # Invalid discount > 100%
