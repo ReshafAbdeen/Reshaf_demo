@@ -1,19 +1,36 @@
-import time
-from functools import wraps
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import Optional, List
 
-def time_it(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        print(f"Function '{func.__name__}' took {(end_time - start_time):.4f} seconds to execute.")
-        return result
-    return wrapper
+app = FastAPI(title="Item Management API")
 
-@time_it
-def compute_squares(n: int) -> list:
-    return [i**2 for i in range(n)]
+# Pydantic Data Model for Request Body Validation
+class Item(BaseModel):
+    id: int
+    name: str = Field(..., min_length=2, example="Laptop")
+    price: float = Field(..., gt=0, example=50000.0)
+    in_stock: bool = True
 
-# Usage
-squares = compute_squares(1_000_000)
+# In-Memory Database
+db: List[Item] = []
+
+@app.get("/items", response_model=List[Item])
+def get_items():
+    return db
+
+@app.post("/items", status_code=201)
+def add_item(item: Item):
+    for existing_item in db:
+        if existing_item.id == item.id:
+            raise HTTPException(status_code=400, detail="Item ID already exists!")
+    db.append(item)
+    return {"message": "Item added successfully!", "item": item}
+
+@app.get("/items/{item_id}")
+def get_item(item_id: int):
+    for item in db:
+        if item.id == item_id:
+            return item
+    raise HTTPException(status_code=404, detail="Item not found!")
+
+# Note: Terminal me `uvicorn filename:app --reload` se run kiya jata hai.
