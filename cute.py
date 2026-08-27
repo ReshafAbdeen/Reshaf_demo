@@ -1,35 +1,31 @@
-import pandas as pd
-import numpy as np
+import argparse
+import sys
 
-# Sample Messy Sales Data Frame
-data = {
-    'Transaction_ID': [101, 102, 103, 104, 105, 106],
-    'Region': ['North', 'South', 'North', 'East', np.nan, 'West'],
-    'Sales': [2500, 1800, np.nan, 3200, 4100, 2900],
-    'Quantity': [5, 3, 4, np.nan, 6, 2],
-    'Discount_Pct': [10, 5, 0, 15, 20, 0]
-}
+def process_cli():
+    parser = argparse.ArgumentParser(
+        description="File Processing CLI Tool",
+        epilog="Example: python app.py input.txt -o output.txt --verbose"
+    )
 
-df = pd.DataFrame(data)
+    # Positional Argument (Required)
+    parser.add_argument("filename", help="Path to the input file")
 
-# 1. Missing Values Handle Karein
-df['Region'] = df['Region'].fillna('Unknown')
-df['Sales'] = df['Sales'].fillna(df['Sales'].median())
-df['Quantity'] = df['Quantity'].fillna(1)
+    # Optional Arguments (Flags)
+    parser.add_argument("-o", "--output", help="Path to save output file", default="result.txt")
+    parser.add_argument("-l", "--lines", type=int, help="Number of lines to read", default=10)
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable detailed console output")
 
-# 2. Vectorized Feature Creation (NumPy Conditionals)
-df['Unit_Price'] = df['Sales'] / df['Quantity']
-df['Performance'] = np.where(df['Sales'] > 3000, 'High', 'Standard')
+    args = parser.parse_args()
 
-# 3. GroupBy Aggregation
-summary = df.groupby('Region').agg(
-    Total_Sales=('Sales', 'sum'),
-    Avg_Unit_Price=('Unit_Price', 'mean'),
-    Transaction_Count=('Transaction_ID', 'count')
-).reset_index()
+    if args.verbose:
+        print(f"[LOG] Processing file: {args.filename}")
+        print(f"[LOG] Output will be saved to: {args.output}")
+        print(f"[LOG] Line limit set to: {args.lines}")
 
-print("--- Cleaned DataFrame ---")
-print(df[['Transaction_ID', 'Region', 'Sales', 'Performance']])
+    print(f"Executing operation on '{args.filename}'...")
 
-print("\n--- Region Summary ---")
-print(summary)
+# Terminal execution test wrapper
+if __name__ == "__main__":
+    # Test arguments simulate kar rahe hain (real setup me sys.argv use hota hai)
+    sys.argv = ["app.py", "data.csv", "-o", "cleaned.csv", "-v"]
+    process_cli()
