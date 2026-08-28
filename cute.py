@@ -1,31 +1,32 @@
-import argparse
-import sys
+import json, os
 
-def process_cli():
-    parser = argparse.ArgumentParser(
-        description="File Processing CLI Tool",
-        epilog="Example: python app.py input.txt -o output.txt --verbose"
-    )
+FILENAME = "tasks.json"
 
-    # Positional Argument (Required)
-    parser.add_argument("filename", help="Path to the input file")
+def load_tasks():
+    return json.load(open(FILENAME)) if os.path.exists(FILENAME) else []
 
-    # Optional Arguments (Flags)
-    parser.add_argument("-o", "--output", help="Path to save output file", default="result.txt")
-    parser.add_argument("-l", "--lines", type=int, help="Number of lines to read", default=10)
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable detailed console output")
+def save_tasks(tasks):
+    json.dump(tasks, open(FILENAME, "w"), indent=2)
 
-    args = parser.parse_args()
+def show_tasks(tasks):
+    print("\n--- YOUR TASKS ---")
+    for i, task in enumerate(tasks, 1):
+        status = "✔" if task["done"] else " "
+        print(f"{i}. [{status}] {task['title']}")
 
-    if args.verbose:
-        print(f"[LOG] Processing file: {args.filename}")
-        print(f"[LOG] Output will be saved to: {args.output}")
-        print(f"[LOG] Line limit set to: {args.lines}")
+def main():
+    tasks = load_tasks()
+    while True:
+        show_tasks(tasks)
+        choice = input("\n[a]dd, [d]one, [q]uit: ").strip().lower()
+        if choice == "a":
+            tasks.append({"title": input("Task: ").strip(), "done": False})
+        elif choice == "d":
+            idx = int(input("Task #: ")) - 1
+            if 0 <= idx < len(tasks):
+                tasks[idx]["done"] = True
+        elif choice == "q":
+            save_tasks(tasks)
+            break
 
-    print(f"Executing operation on '{args.filename}'...")
-
-# Terminal execution test wrapper
-if __name__ == "__main__":
-    # Test arguments simulate kar rahe hain (real setup me sys.argv use hota hai)
-    sys.argv = ["app.py", "data.csv", "-o", "cleaned.csv", "-v"]
-    process_cli()
+main()
