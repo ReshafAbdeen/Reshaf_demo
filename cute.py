@@ -1,32 +1,48 @@
-import json, os
+import json
+from datetime import datetime
 
-FILENAME = "tasks.json"
 
-def load_tasks():
-    return json.load(open(FILENAME)) if os.path.exists(FILENAME) else []
+class TaskManager:
 
-def save_tasks(tasks):
-    json.dump(tasks, open(FILENAME, "w"), indent=2)
+    def __init__(self, filename="tasks.json"):
+        self.filename = filename
+        self.tasks = self.load()
 
-def show_tasks(tasks):
-    print("\n--- YOUR TASKS ---")
-    for i, task in enumerate(tasks, 1):
-        status = "✔" if task["done"] else " "
-        print(f"{i}. [{status}] {task['title']}")
+    def load(self):
+        try:
+            with open(self.filename, "r") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return []
 
-def main():
-    tasks = load_tasks()
-    while True:
-        show_tasks(tasks)
-        choice = input("\n[a]dd, [d]one, [q]uit: ").strip().lower()
-        if choice == "a":
-            tasks.append({"title": input("Task: ").strip(), "done": False})
-        elif choice == "d":
-            idx = int(input("Task #: ")) - 1
-            if 0 <= idx < len(tasks):
-                tasks[idx]["done"] = True
-        elif choice == "q":
-            save_tasks(tasks)
-            break
+    def save(self):
+        with open(self.filename, "w") as f:
+            json.dump(self.tasks, f, indent=2)
 
-main()
+    def add_task(self, title):
+        task = {"title": title, "done": False, "created": str(datetime.now())}
+        self.tasks.append(task)
+        self.save()
+        print(f"Added task: '{title}'")
+
+    def list_tasks(self):
+        if not self.tasks:
+            print("No tasks found.")
+            return
+        for idx, task in enumerate(self.tasks, 1):
+            status = "✓" if task["done"] else "✗"
+            print(f"{idx}. [{status}] {task['title']}")
+
+    def toggle_task(self, index):
+        if 0 <= index < len(self.tasks):
+            self.tasks[index]["done"] = not self.tasks[index]["done"]
+            self.save()
+            print("Task status updated!")
+
+
+manager = TaskManager()
+manager.add_task("Learn Python")
+manager.add_task("Build a mini project")
+manager.list_tasks()
+manager.toggle_task(0)
+manager.list_tasks()
