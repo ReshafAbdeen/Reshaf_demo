@@ -1,37 +1,44 @@
-import json, os
-from datetime import datetime
+import random
+import time
 
-FILENAME = "tasks.json"
 
-def load_tasks():
-    return json.load(open(FILENAME)) if os.path.exists(FILENAME) else []
+class Player:
 
-def save_tasks(tasks):
-    json.dump(tasks, open(FILENAME, "w"), indent=2)
+    def __init__(self, name):
+        self.name = name
+        self.health = 100
+        self.score = 0
 
-def show_tasks(tasks):
-    print("\n--- YOUR TASKS ---")
-    today = datetime.now().date()
-    for i, task in enumerate(tasks, 1):
-        status = "✔" if task["done"] else " "
-        due = datetime.strptime(task["due"], "%Y-%m-%d").date()
-        days_left = (due - today).days
-        due_str = f"Due: {due} ({days_left}d left)" if days_left >= 0 else f"OVERDUE ({abs(days_left)}d ago)"
-        print(f"{i}. [{status}] {task['title']} - {due_str}")
+    def attack(self, target):
+        damage = random.randint(10, 25)
+        target.health -= damage
+        print(f"{self.name} attacks {target.name} for {damage} damage!")
 
-def main():
-    tasks = load_tasks()
-    while True:
-        show_tasks(tasks)
-        choice = input("\n[a]dd, [d]one, [q]uit: ").strip().lower()
-        if choice == "a":
-            title = input("Task title: ").strip()
-            due = input("Due date (YYYY-MM-DD): ").strip()
-            tasks.append({"title": title, "due": due, "done": False})
-        elif choice == "d":
-            idx = int(input("Task #: ")) - 1
-            if 0 <= idx < len(tasks): tasks[idx]["done"] = True
-        elif choice == "q":
-            save_tasks(tasks); break
+    def heal(self):
+        amount = random.randint(15, 30)
+        self.health = min(100, self.health + amount)
+        print(f"{self.name} heals for {amount} HP! Current HP: {self.health}")
 
-main()
+
+hero = Player("Hero")
+monster = Player("Goblin")
+monster.health = 80
+
+print("--- Mini Arena Battle ---")
+while hero.health > 0 and monster.health > 0:
+    action = input("Choose action: [a]ttack or [h]eal: ").strip().lower()
+    if action == "a":
+        hero.attack(monster)
+    elif action == "h":
+        hero.heal()
+    else:
+        print("Invalid move, lost turn!")
+
+    if monster.health > 0:
+        time.sleep(0.5)
+        monster.attack(hero)
+
+    print(f"Status -> {hero.name}: {hero.health} HP | {monster.name}: {monster.health} HP\n")
+
+print("Game Over!")
+print(f"{'Hero won!' if hero.health > 0 else 'Monster won!'}")
