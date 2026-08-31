@@ -1,31 +1,40 @@
-import pytest
+import time
+import requests
 
-# Target Functions to Test
-def calculate_discount(price: float, discount_pct: float) -> float:
-    if price < 0 or not (0 <= discount_pct <= 100):
-        raise ValueError("Invalid price or discount percentage")
-    return round(price * (1 - discount_pct / 100), 2)
 
-# 1. Test Fixture Setup
-@pytest.fixture
-def sample_product():
-    return {"name": "Laptop", "price": 50000.0}
+class WeatherTracker:
 
-# 2. Basic Test Case
-def test_valid_discount(sample_product):
-    final_price = calculate_discount(sample_product["price"], 10)
-    assert final_price == 45000.0
+    def __init__(self, api_key="demo"):
+        self.api_key = api_key
+        self.history = []
 
-# 3. Parameterized Testing (Multiple Edge Cases)
-@pytest.mark.parametrize("price, discount, expected", [
-    (100.0, 0, 100.0),
-    (200.0, 50, 100.0),
-    (99.99, 10, 89.99),
-])
-def test_discount_variations(price, discount, expected):
-    assert calculate_discount(price, discount) == expected
+    def fetch_weather(self, city):
+        url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={self.api_key}&units=metric"
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                result = {
+                    "city": city,
+                    "temp": data["main"]["temp"],
+                    "weather": data["weather"][0]["description"],
+                    "timestamp": time.strftime("%H:%M:%S"),
+                }
+                self.history.append(result)
+                return result
+            return {"error": f"City not found (Status {response.status_code})"}
+        except requests.RequestException as e:
+            return {"error": str(e)}
 
-# 4. Exception Testing
-def test_invalid_discount_raises_error():
-    with pytest.raises(ValueError):
-        calculate_discount(100.0, 150)  # Invalid discount > 100%
+    def show_history(self):
+        print("\n--- Search History ---")
+        for item in self.history:
+            print(
+                f"[{item['timestamp']}] {item['city']}: {item['temp']}°C, {item['weather']}"
+            )
+
+
+tracker = WeatherTracker()
+print(tracker.fetch_weather("London"))
+print(tracker.fetch_weather("Tokyo"))
+tracker.show_history()
