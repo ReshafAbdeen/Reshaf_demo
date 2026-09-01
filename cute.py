@@ -1,45 +1,48 @@
-import sqlite3
+import hashlib
+import json
+import time
 
 
-class ContactBook:
+class SimpleBlockchain:
 
-    def __init__(self, db_name="contacts.db"):
-        self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
-        self.cursor.execute(
-            """CREATE TABLE IF NOT EXISTS contacts 
-                              (id INTEGER PRIMARY KEY, name TEXT, phone TEXT, email TEXT)"""
-        )
-        self.conn.commit()
+    def __init__(self):
+        self.chain = []
+        self.create_block(proof=100, previous_hash="1")
 
-    def add_contact(self, name, phone, email):
-        self.cursor.execute(
-            "INSERT INTO contacts (name, phone, email) VALUES (?, ?, ?)",
-            (name, phone, email),
-        )
-        self.conn.commit()
-        print(f"Added: {name}")
+    def create_block(self, proof, previous_hash):
+        block = {
+            "index": len(self.chain) + 1,
+            "timestamp": time.time(),
+            "proof": proof,
+            "previous_hash": previous_hash,
+        }
+        self.chain.append(block)
+        return block
 
-    def search_contact(self, name):
-        self.cursor.execute(
-            "SELECT * FROM contacts WHERE name LIKE ?", (f"%{name}%",)
-        )
-        return self.cursor.fetchall()
+    def get_last_block(self):
+        return self.chain[-1]
 
-    def display_all(self):
-        self.cursor.execute("SELECT * FROM contacts")
-        for row in self.cursor.fetchall():
-            print(f"ID: {row[0]} | Name: {row[1]} | Phone: {row[2]} | Email: {row[3]}")
+    def hash(self, block):
+        encoded_block = json.dumps(block, sort_keys=True).encode()
+        return hashlib.sha256(encoded_block).hexdigest()
 
-    def close(self):
-        self.conn.close()
+    def proof_of_work(self, last_proof):
+        new_proof = 1
+        while not (
+            hashlib.sha256(
+                str(new_proof**2 - last_proof**2).encode()
+            ).hexdigest()[:4]
+            == "0000"
+        ):
+            new_proof += 1
+        return new_proof
 
 
-book = ContactBook()
-book.add_contact("Alice Smith", "555-0199", "alice@example.com")
-book.add_contact("Bob Jones", "555-0142", "bob@example.com")
-print("\n--- All Contacts ---")
-book.display_all()
-print("\n--- Search Result ---")
-print(book.search_contact("Alice"))
-book.close()
+bc = SimpleBlockchain()
+print("Mining block 1...")
+last_block = bc.get_last_block()
+proof = bc.proof_of_work(last_block["proof"])
+previous_hash = bc.hash(last_block)
+block = bc.create_block(proof, previous_hash)
+
+print(f"Block Mined! {json.dumps(block, indent=2)}")
