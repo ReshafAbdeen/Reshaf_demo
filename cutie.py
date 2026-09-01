@@ -1,44 +1,36 @@
-import random
-import time
+import collections
+import re
 
 
-class Player:
+class TextAnalyzer:
 
-    def __init__(self, name):
-        self.name = name
-        self.health = 100
-        self.score = 0
+    def __init__(self, text):
+        self.text = text
+        self.words = re.findall(r"\b\w+\b", text.lower())
 
-    def attack(self, target):
-        damage = random.randint(10, 25)
-        target.health -= damage
-        print(f"{self.name} attacks {target.name} for {damage} damage!")
+    def word_count(self):
+        return len(self.words)
 
-    def heal(self):
-        amount = random.randint(15, 30)
-        self.health = min(100, self.health + amount)
-        print(f"{self.name} heals for {amount} HP! Current HP: {self.health}")
+    def char_count(self, ignore_spaces=True):
+        if ignore_spaces:
+            return len(self.text.replace(" ", ""))
+        return len(self.text)
+
+    def top_words(self, n=5):
+        counts = collections.Counter(self.words)
+        return counts.most_common(n)
+
+    def average_word_length(self):
+        if not self.words:
+            return 0
+        total_chars = sum(len(word) for word in self.words)
+        return round(total_chars / len(self.words), 2)
 
 
-hero = Player("Hero")
-monster = Player("Goblin")
-monster.health = 80
+sample_text = "Python is powerful, readable, and fun. Python makes coding clear and intuitive!"
+analyzer = TextAnalyzer(sample_text)
 
-print("--- Mini Arena Battle ---")
-while hero.health > 0 and monster.health > 0:
-    action = input("Choose action: [a]ttack or [h]eal: ").strip().lower()
-    if action == "a":
-        hero.attack(monster)
-    elif action == "h":
-        hero.heal()
-    else:
-        print("Invalid move, lost turn!")
-
-    if monster.health > 0:
-        time.sleep(0.5)
-        monster.attack(hero)
-
-    print(f"Status -> {hero.name}: {hero.health} HP | {monster.name}: {monster.health} HP\n")
-
-print("Game Over!")
-print(f"{'Hero won!' if hero.health > 0 else 'Monster won!'}")
+print(f"Total Words: {analyzer.word_count()}")
+print(f"Total Chars (no spaces): {analyzer.char_count()}")
+print(f"Average Word Length: {analyzer.average_word_length()}")
+print(f"Top 3 Most Frequent Words: {analyzer.top_words(3)}")
