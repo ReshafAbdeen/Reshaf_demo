@@ -1,32 +1,36 @@
-# Advanced Dice Roller Simulator
+import string
 
-import random
-def roll_dice():
-    print("--- Advanced Dice Roller ---")
-    history = []
-    while True:
-        try:
-            sides = int(input("\nEnter number of sides (e.g., 6) or 0 to quit: "))
-            if sides == 0:
-                break
-            if sides < 2:
-                print("A dice must have at least 2 sides!")
-                continue
-            rolls = int(input("How many times to roll? "))
-            if rolls < 1:
-                print("Must roll at least once!")
-                continue
-            current_rolls = [random.randint(1, sides) for _ in range(rolls)]
-            history.extend(current_rolls)
-            print(f"You rolled: {current_rolls}")
-            print(f"Total sum of this roll: {sum(current_rolls)}")
-        except ValueError:
-            print("Please enter valid integers!")
-    if history:
-        print("\n--- Session Statistics ---")
-        print(f"Total rolls made: {len(history)}")
-        print(f"Sum of all rolls: {sum(history)}")
-        print(f"Highest roll achieved: {max(history)}")
-        print(f"Average roll: {sum(history)/len(history):.2f}")
-    print("Thanks for rolling with us!")
-roll_dice()
+
+class Cipher:
+
+    def __init__(self, shift=3):
+        self.shift = shift % 26
+        self.alphabet = string.ascii_lowercase
+
+    def encrypt(self, text):
+        result = []
+        for char in text:
+            if char.lower() in self.alphabet:
+                base = "a" if char.islower() else "A"
+                shifted = chr((ord(char) - ord(base) + self.shift) % 26 + ord(base))
+                result.append(shifted)
+            else:
+                result.append(char)
+        return "".join(result)
+
+    def decrypt(self, text):
+        original_shift = self.shift
+        self.shift = -self.shift
+        decrypted = self.encrypt(text)
+        self.shift = original_shift
+        return decrypted
+
+
+caesar = Cipher(shift=5)
+secret_msg = "Hello, World! Python 101."
+encrypted = caesar.encrypt(secret_msg)
+decrypted = caesar.decrypt(encrypted)
+
+print(f"Original:  {secret_msg}")
+print(f"Encrypted: {encrypted}")
+print(f"Decrypted: {decrypted}")
