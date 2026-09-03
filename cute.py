@@ -1,48 +1,36 @@
-import hashlib
-import json
-import time
+import math
 
 
-class SimpleBlockchain:
+class Vector2D:
 
-    def __init__(self):
-        self.chain = []
-        self.create_block(proof=100, previous_hash="1")
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-    def create_block(self, proof, previous_hash):
-        block = {
-            "index": len(self.chain) + 1,
-            "timestamp": time.time(),
-            "proof": proof,
-            "previous_hash": previous_hash,
-        }
-        self.chain.append(block)
-        return block
+    def magnitude(self):
+        return math.sqrt(self.x**2 + self.y**2)
 
-    def get_last_block(self):
-        return self.chain[-1]
+    def normalize(self):
+        mag = self.magnitude()
+        if mag == 0:
+            return Vector2D(0, 0)
+        return Vector2D(self.x / mag, self.y / mag)
 
-    def hash(self, block):
-        encoded_block = json.dumps(block, sort_keys=True).encode()
-        return hashlib.sha256(encoded_block).hexdigest()
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
 
-    def proof_of_work(self, last_proof):
-        new_proof = 1
-        while not (
-            hashlib.sha256(
-                str(new_proof**2 - last_proof**2).encode()
-            ).hexdigest()[:4]
-            == "0000"
-        ):
-            new_proof += 1
-        return new_proof
+    def add(self, other):
+        return Vector2D(self.x + other.x, self.y + other.y)
+
+    def __repr__(self):
+        return f"Vector2D({self.x:.2f}, {self.y:.2f})"
 
 
-bc = SimpleBlockchain()
-print("Mining block 1...")
-last_block = bc.get_last_block()
-proof = bc.proof_of_work(last_block["proof"])
-previous_hash = bc.hash(last_block)
-block = bc.create_block(proof, previous_hash)
+v1 = Vector2D(3, 4)
+v2 = Vector2D(1, 2)
 
-print(f"Block Mined! {json.dumps(block, indent=2)}")
+print(f"Vector 1: {v1}")
+print(f"Magnitude of v1: {v1.magnitude()}")
+print(f"Normalized v1: {v1.normalize()}")
+print(f"Dot Product (v1 . v2): {v1.dot(v2)}")
+print(f"Sum (v1 + v2): {v1.add(v2)}")
