@@ -1,36 +1,36 @@
-import string
+import csv
 
 
-class Cipher:
+class DataFilter:
 
-    def __init__(self, shift=3):
-        self.shift = shift % 26
-        self.alphabet = string.ascii_lowercase
+    def __init__(self, data):
+        self.data = data
 
-    def encrypt(self, text):
-        result = []
-        for char in text:
-            if char.lower() in self.alphabet:
-                base = "a" if char.islower() else "A"
-                shifted = chr((ord(char) - ord(base) + self.shift) % 26 + ord(base))
-                result.append(shifted)
-            else:
-                result.append(char)
-        return "".join(result)
+    def filter_by_key(self, key, value):
+        return [row for row in self.data if row.get(key) == value]
 
-    def decrypt(self, text):
-        original_shift = self.shift
-        self.shift = -self.shift
-        decrypted = self.encrypt(text)
-        self.shift = original_shift
-        return decrypted
+    def select_columns(self, columns):
+        return [{k: row[k] for k in columns if k in row} for row in self.data]
+
+    def export_csv(self, filename):
+        if not self.data:
+            return
+        keys = self.data[0].keys()
+        with open(filename, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(self.data)
+        print(f"Exported to {filename}")
 
 
-caesar = Cipher(shift=5)
-secret_msg = "Hello, World! Python 101."
-encrypted = caesar.encrypt(secret_msg)
-decrypted = caesar.decrypt(encrypted)
+dataset = [
+    {"name": "Alice", "role": "Dev", "age": "28"},
+    {"name": "Bob", "role": "Design", "age": "34"},
+    {"name": "Charlie", "role": "Dev", "age": "22"},
+]
 
-print(f"Original:  {secret_msg}")
-print(f"Encrypted: {encrypted}")
-print(f"Decrypted: {decrypted}")
+df = DataFilter(dataset)
+devs = df.filter_by_key("role", "Dev")
+print(f"Developers: {devs}")
+print(f"Names only: {df.select_columns(['name'])}")
+df.export_csv("devs.csv")
