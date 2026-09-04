@@ -1,36 +1,45 @@
-import math
+import sys
 
 
-class Vector2D:
+class CircularBuffer:
 
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = [None] * capacity
+        self.head = 0
+        self.tail = 0
+        self.size = 0
 
-    def magnitude(self):
-        return math.sqrt(self.x**2 + self.y**2)
+    def enqueue(self, item):
+        self.buffer[self.tail] = item
+        self.tail = (self.tail + 1) % self.capacity
+        if self.size < self.capacity:
+            self.size += 1
+        else:
+            self.head = (self.head + 1) % self.capacity
 
-    def normalize(self):
-        mag = self.magnitude()
-        if mag == 0:
-            return Vector2D(0, 0)
-        return Vector2D(self.x / mag, self.y / mag)
+    def dequeue(self):
+        if self.size == 0:
+            return None
+        item = self.buffer[self.head]
+        self.buffer[self.head] = None
+        self.head = (self.head + 1) % self.capacity
+        self.size -= 1
+        return item
 
-    def dot(self, other):
-        return self.x * other.x + self.y * other.y
-
-    def add(self, other):
-        return Vector2D(self.x + other.x, self.y + other.y)
-
-    def __repr__(self):
-        return f"Vector2D({self.x:.2f}, {self.y:.2f})"
+    def get_all(self):
+        return [
+            self.buffer[(self.head + i) % self.capacity]
+            for i in range(self.size)
+        ]
 
 
-v1 = Vector2D(3, 4)
-v2 = Vector2D(1, 2)
-
-print(f"Vector 1: {v1}")
-print(f"Magnitude of v1: {v1.magnitude()}")
-print(f"Normalized v1: {v1.normalize()}")
-print(f"Dot Product (v1 . v2): {v1.dot(v2)}")
-print(f"Sum (v1 + v2): {v1.add(v2)}")
+cb = CircularBuffer(3)
+cb.enqueue("A")
+cb.enqueue("B")
+cb.enqueue("C")
+print("Full Buffer:", cb.get_all())
+cb.enqueue("D")  # Overwrites 'A'
+print("After Overwrite:", cb.get_all())
+print("Dequeued:", cb.dequeue())
+print("Final State:", cb.get_all())
