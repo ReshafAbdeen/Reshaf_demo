@@ -1,45 +1,35 @@
-import sys
+import collections
 
 
-class CircularBuffer:
+class Graph:
 
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.buffer = [None] * capacity
-        self.head = 0
-        self.tail = 0
-        self.size = 0
+    def __init__(self):
+        self.adj_list = collections.defaultdict(list)
 
-    def enqueue(self, item):
-        self.buffer[self.tail] = item
-        self.tail = (self.tail + 1) % self.capacity
-        if self.size < self.capacity:
-            self.size += 1
-        else:
-            self.head = (self.head + 1) % self.capacity
+    def add_edge(self, u, v):
+        self.adj_list[u].append(v)
+        self.adj_list[v].append(u)
 
-    def dequeue(self):
-        if self.size == 0:
-            return None
-        item = self.buffer[self.head]
-        self.buffer[self.head] = None
-        self.head = (self.head + 1) % self.capacity
-        self.size -= 1
-        return item
+    def bfs(self, start):
+        visited = {start}
+        queue = collections.deque([start])
+        order = []
 
-    def get_all(self):
-        return [
-            self.buffer[(self.head + i) % self.capacity]
-            for i in range(self.size)
-        ]
+        while queue:
+            vertex = queue.popleft()
+            order.append(vertex)
+            for neighbor in self.adj_list[vertex]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        return order
 
 
-cb = CircularBuffer(3)
-cb.enqueue("A")
-cb.enqueue("B")
-cb.enqueue("C")
-print("Full Buffer:", cb.get_all())
-cb.enqueue("D")  # Overwrites 'A'
-print("After Overwrite:", cb.get_all())
-print("Dequeued:", cb.dequeue())
-print("Final State:", cb.get_all())
+g = Graph()
+g.add_edge("A", "B")
+g.add_edge("A", "C")
+g.add_edge("B", "D")
+g.add_edge("C", "E")
+
+print("BFS Traversal starting from 'A':")
+print(" -> ".join(g.bfs("A")))
