@@ -1,39 +1,32 @@
-import datetime
+import functools
+import time
 
 
-class LogSystem:
+def memoize(func):
+    cache = {}
 
-    def __init__(self, filename="app.log"):
-        self.filename = filename
+    @functools.wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
 
-    def _write_log(self, level, message):
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        entry = f"[{timestamp}] [{level.upper()}] {message}"
-        print(entry)
-        with open(self.filename, "a") as f:
-            f.write(entry + "\n")
-
-    def info(self, message):
-        self._write_log("INFO", message)
-
-    def warning(self, message):
-        self._write_log("WARN", message)
-
-    def error(self, message):
-        self._write_log("ERROR", message)
-
-    def read_logs((self)):
-        try:
-            with open(self.filename, "r") as f:
-                return f.readlines()
-        except FileNotFoundError:
-            return []
+    return wrapper
 
 
-logger = LogSystem()
-logger.info("Application started successfully.")
-logger.warning("High memory usage detected!")
-logger.error("Failed to connect to database.")
+@memoize
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
 
-print("\n--- Reading Log File ---")
-print("".join(logger.read_logs()[-3:]))
+
+start = time.perf_counter()
+print(f"Fibonacci(35) result: {fibonacci(35)}")
+first_run_time = time.perf_counter() - start
+print(f"First run time: {first_run_time:.6f} seconds")
+
+start = time.perf_counter()
+print(f"Fibonacci(35) cached: {fibonacci(35)}")
+second_run_time = time.perf_counter() - start
+print(f"Second run time: {second_run_time:.6f} seconds")
