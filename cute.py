@@ -1,32 +1,29 @@
-import collections
+import threading
+import time
 
 
-class LRUCache:
+class ThreadSafeCounter:
 
-    def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.cache = collections.OrderedDict()
+    def __init__(self):
+        self.value = 0
+        self.lock = threading.Lock()
 
-    def get(self, key: int) -> int:
-        if key not in self.cache:
-            return -1
-        self.cache.move_to_end(key)
-        return self.cache[key]
-
-    def put(self, key: int, value: int) -> None:
-        if key in self.cache:
-            self.cache.move_to_end(key)
-        self.cache[key] = value
-        if len(self.cache) > self.capacity:
-            self.cache.popitem(last=False)
+    def increment(self):
+        with self.lock:
+            current = self.value
+            time.sleep(0.001)  # Simulate non-atomic operation
+            self.value = current + 1
 
 
-cache = LRUCache(capacity=2)
-cache.put(1, 100)
-cache.put(2, 200)
-print("Get 1:", cache.get(1))  # Returns 100 (1 is now most recently used)
-cache.put(3, 300)              # Evicts key 2
-print("Get 2:", cache.get(2))  # Returns -1 (evicted)
-cache.put(4, 400)              # Evicts key 1
-print("Get 1:", cache.get(1))  # Returns -1 (evicted)
-print("Get 3:", cache.get(3))  # Returns 300
+counter = ThreadSafeCounter()
+threads = []
+
+for _ in range(10):
+    t = threading.Thread(target=lambda: [counter.increment() for _ in range(5)])
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
+
+print(f"Final counter value (expected 50): {counter.value}")
