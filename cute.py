@@ -1,29 +1,35 @@
-import threading
 import time
 
 
-class ThreadSafeCounter:
+class RateLimiter:
 
-    def __init__(self):
-        self.value = 0
-        self.lock = threading.Lock()
+    def __init__(self, max_requests: int, time_window: float):
+        self.max_requests = max_requests
+        self.time_window = time_window
+        self.requests = []
 
-    def increment(self):
-        with self.lock:
-            current = self.value
-            time.sleep(0.001)  # Simulate non-atomic operation
-            self.value = current + 1
+    def allow_request(self) -> bool:
+        now = time.time()
+        # Drop timestamps older than the time window
+        self.requests = [
+            t for t in self.requests if now - t < self.time_window
+        ]
+        if len(self.requests) < self.max_requests:
+            self.requests.append(now)
+            return True
+        return False
 
 
-counter = ThreadSafeCounter()
-threads = []
+limiter = RateLimiter(max_requests=3, time_window=1.0)
 
-for _ in range(10):
-    t = threading.Thread(target=lambda: [counter.increment() for _ in range(5)])
-    threads.append(t)
-    t.start()
+print("Attempting 5 rapid API requests:")
+for i in range(1, 6):
+    allowed = limiter.allow_request()
+    status = "200 OK" if allowed else "429 Too Many Requests"
+    print(f"Request {i}: {status}")
 
-for t in threads:
-    t.join()
+print("\nWaiting for rate limit window to expire...")
+time.sleep(1.1)
 
-print(f"Final counter value (expected 50): {counter.value}")
+allowed = limiter.allow_request()
+print(f"Request 6 (after cooldown): {'200 OK' if allowed else '429 Too Many Requests'}")
