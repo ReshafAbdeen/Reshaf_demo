@@ -1,35 +1,35 @@
-import time
+class EventBus:
+
+    def __init__(self):
+        self._listeners = {}
+
+    def subscribe(self, event_type, callback):
+        if event_type not in self._listeners:
+            self._listeners[event_type] = []
+        self._listeners[event_type].append(callback)
+
+    def unsubscribe(self, event_type, callback):
+        if event_type in self._listeners:
+            self._listeners[event_type].remove(callback)
+
+    def publish(self, event_type, data):
+        if event_type in self._listeners:
+            for callback in self._listeners[event_type]:
+                callback(data)
 
 
-class RateLimiter:
+bus = EventBus()
 
-    def __init__(self, max_requests: int, time_window: float):
-        self.max_requests = max_requests
-        self.time_window = time_window
-        self.requests = []
+# Event listeners
+on_user_login = lambda data: print(f"[Email Notification] Welcome back, {data['user']}!")
+on_audit_log = lambda data: print(f"[Audit Log] Event logged for user: {data['user']}")
 
-    def allow_request(self) -> bool:
-        now = time.time()
-        # Drop timestamps older than the time window
-        self.requests = [
-            t for t in self.requests if now - t < self.time_window
-        ]
-        if len(self.requests) < self.max_requests:
-            self.requests.append(now)
-            return True
-        return False
+bus.subscribe("user_login", on_user_login)
+bus.subscribe("user_login", on_audit_log)
 
+print("Publishing 'user_login' event:")
+bus.publish("user_login", {"user": "Alice"})
 
-limiter = RateLimiter(max_requests=3, time_window=1.0)
-
-print("Attempting 5 rapid API requests:")
-for i in range(1, 6):
-    allowed = limiter.allow_request()
-    status = "200 OK" if allowed else "429 Too Many Requests"
-    print(f"Request {i}: {status}")
-
-print("\nWaiting for rate limit window to expire...")
-time.sleep(1.1)
-
-allowed = limiter.allow_request()
-print(f"Request 6 (after cooldown): {'200 OK' if allowed else '429 Too Many Requests'}")
+bus.unsubscribe("user_login", on_user_login)
+print("\nPublishing 'user_login' after unsubscribing email handler:")
+bus.publish("user_login", {"user": "Bob"})
