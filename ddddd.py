@@ -1,36 +1,57 @@
-import csv
+import inspect
 
 
-class DataFilter:
+class ValidationRule:
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, field, error_msg):
+        self.field = field
+        self.error_msg = error_msg
 
-    def filter_by_key(self, key, value):
-        return [row for row in self.data if row.get(key) == value]
-
-    def select_columns(self, columns):
-        return [{k: row[k] for k in columns if k in row} for row in self.data]
-
-    def export_csv(self, filename):
-        if not self.data:
-            return
-        keys = self.data[0].keys()
-        with open(filename, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=keys)
-            writer.writeheader()
-            writer.writerows(self.data)
-        print(f"Exported to {filename}")
+    def validate(self, data):
+        raise NotImplementedError
 
 
-dataset = [
-    {"name": "Alice", "role": "Dev", "age": "28"},
-    {"name": "Bob", "role": "Design", "age": "34"},
-    {"name": "Charlie", "role": "Dev", "age": "22"},
-]
+class Required(ValidationRule):
 
-df = DataFilter(dataset)
-devs = df.filter_by_key("role", "Dev")
-print(f"Developers: {devs}")
-print(f"Names only: {df.select_columns(['name'])}")
-df.export_csv("devs.csv")
+    def validate(self, data):
+        val = data.get(self.field)
+        return val is not None and str(val).strip() != ""
+
+
+class MinLength(ValidationRule):
+
+    def __init__(self, field, min_len):
+        super().__init__(field, f"Field '{field}' must be at least {min_len} chars")
+        self.min_len = min_len
+
+    def validate(self, data):
+        val = data.get(self.field, "")
+        return len(str(val)) >= self.min_len
+
+
+class SchemaValidator:
+
+    def __init__(self, rules):
+        self.rules = rules
+
+    def validate(self, data):
+        errors = []
+        for rule in self.rules:
+            if not rule.validate(data):
+                errors.append(rule.error_msg)
+        return len(errors) == 0, errors
+
+
+validator = SchemaValidator([
+    Required("username", "Username is required"),
+    MinLength("username", 4),
+    Required("email", "Email is required"),
+])
+
+data1 = {"username": "abc", "email": ""}
+valid, errors = validator.validate(data1)
+print(f"Data 1 Valid: {valid} | Errors: {errors}")
+
+data2 = {"username": "alice_dev", "email": "alice@example.com"}
+valid, errors = validator.validate(data2)
+print(f"Data 2 Valid: {valid} | Errors: {errors}")
