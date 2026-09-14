@@ -1,57 +1,36 @@
-import inspect
+import time
+from functools import wraps
 
 
-class ValidationRule:
+class RateLimiterTokenBucket:
 
-    def __init__(self, field, error_msg):
-        self.field = field
-        self.error_msg = error_msg
+    def __init__(self, capacity: int, refill_rate: float):
+        self.capacity = capacity
+        self.refill_rate = refill_rate
+        self.tokens = capacity
+        self.last_update = time.time()
 
-    def validate(self, data):
-        raise NotImplementedError
+    def _refill(self):
+        now = time.time()
+        delta = now - self.last_update
+        self.tokens = min(self.capacity, self.tokens + delta * self.refill_rate)
+        self.last_update = now
 
-
-class Required(ValidationRule):
-
-    def validate(self, data):
-        val = data.get(self.field)
-        return val is not None and str(val).strip() != ""
-
-
-class MinLength(ValidationRule):
-
-    def __init__(self, field, min_len):
-        super().__init__(field, f"Field '{field}' must be at least {min_len} chars")
-        self.min_len = min_len
-
-    def validate(self, data):
-        val = data.get(self.field, "")
-        return len(str(val)) >= self.min_len
+    def consume(self, tokens: int = 1) -> bool:
+        self._refill()
+        if self.tokens >= tokens:
+            self.tokens -= tokens
+            return True
+        return False
 
 
-class SchemaValidator:
+bucket = RateLimiterTokenBucket(capacity=5, refill_rate=2.0)
 
-    def __init__(self, rules):
-        self.rules = rules
+print("Consuming 5 tokens initially:")
+for i in range(1, 6):
+    print(f"Token {i} consumed: {bucket.consume()}")
 
-    def validate(self, data):
-        errors = []
-        for rule in self.rules:
-            if not rule.validate(data):
-                errors.append(rule.error_msg)
-        return len(errors) == 0, errors
+print(f"\nConsuming 6th token immediately: {bucket.consume()}")
 
-
-validator = SchemaValidator([
-    Required("username", "Username is required"),
-    MinLength("username", 4),
-    Required("email", "Email is required"),
-])
-
-data1 = {"username": "abc", "email": ""}
-valid, errors = validator.validate(data1)
-print(f"Data 1 Valid: {valid} | Errors: {errors}")
-
-data2 = {"username": "alice_dev", "email": "alice@example.com"}
-valid, errors = validator.validate(data2)
-print(f"Data 2 Valid: {valid} | Errors: {errors}")
+time.sleep(1.0)
+print(f"\nConsuming token after 1 second refill: {bucket.consume()}")
