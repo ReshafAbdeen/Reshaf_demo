@@ -1,43 +1,32 @@
-import math
+class CaesarCipher:
+
+    def __init__(self, shift: int):
+        self.shift = shift % 26
+
+    def _transform(self, text: str, shift: int) -> str:
+        result = []
+        for char in text:
+            if char.isalpha():
+                base = ord('A') if char.isupper() else ord('a')
+                shifted = (ord(char) - base + shift) % 26 + base
+                result.append(chr(shifted))
+            else:
+                result.append(char)
+        return "".join(result)
+
+    def encrypt(self, plaintext: str) -> str:
+        return self._transform(plaintext, self.shift)
+
+    def decrypt(self, ciphertext: str) -> str:
+        return self._transform(ciphertext, -self.shift)
 
 
-class Vector2D:
+cipher = CaesarCipher(shift=3)
+message = "Hello, World! 2026"
 
-    def __init__(self, x: float, y: float):
-        self.x = float(x)
-        self.y = float(y)
+encrypted = cipher.encrypt(message)
+decrypted = cipher.decrypt(encrypted)
 
-    def __repr__(self):
-        return f"Vector2D({self.x}, {self.y})"
-
-    def __add__(self, other):
-        return Vector2D(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Vector2D(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, scalar: float):
-        return Vector2D(self.x * scalar, self.y * scalar)
-
-    def dot(self, other) -> float:
-        return self.x * other.x + self.y * other.y
-
-    def magnitude(self) -> float:
-        return math.hypot(self.x, self.y)
-
-    def normalize(self):
-        mag = self.magnitude()
-        if mag == 0:
-            return Vector2D(0, 0)
-        return Vector2D(self.x / mag, self.y / mag)
-
-
-v1 = Vector2D(3, 4)
-v2 = Vector2D(1, 2)
-
-print("v1:", v1)
-print("v1 + v2:", v1 + v2)
-print("v1 * 3:", v1 * 3)
-print("Dot Product:", v1.dot(v2))
-print("v1 Magnitude:", v1.magnitude())
-print("v1 Normalized:", v1.normalize())
+print(f"Original:  {message}")
+print(f"Encrypted: {encrypted}")
+print(f"Decrypted: {decrypted}")
