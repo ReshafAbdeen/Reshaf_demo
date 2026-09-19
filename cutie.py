@@ -1,32 +1,69 @@
-class CaesarCipher:
+import string
+from pathlib import Path
 
-    def __init__(self, shift: int):
-        self.shift = shift % 26
+def check_password_strength(password: str) -> dict:
+    """Evaluates the strength of a given password and returns a score and feedback."""
+    feedback = []
+    score = 0
 
-    def _transform(self, text: str, shift: int) -> str:
-        result = []
-        for char in text:
-            if char.isalpha():
-                base = ord('A') if char.isupper() else ord('a')
-                shifted = (ord(char) - base + shift) % 26 + base
-                result.append(chr(shifted))
-            else:
-                result.append(char)
-        return "".join(result)
+    if len(password) >= 8:
+        score += 1
+    else:
+        feedback.append("At least 8 characters long")
 
-    def encrypt(self, plaintext: str) -> str:
-        return self._transform(plaintext, self.shift)
+    if any(char in string.ascii_lowercase for char in password):
+        score += 1
+    else:
+        feedback.append("Missing lowercase letter")
 
-    def decrypt(self, ciphertext: str) -> str:
-        return self._transform(ciphertext, -self.shift)
+    if any(char in string.ascii_uppercase for char in password):
+        score += 1
+    else:
+        feedback.append("Missing uppercase letter")
 
+    if any(char in string.digits for char in password):
+        score += 1
+    else:
+        feedback.append("Missing number")
 
-cipher = CaesarCipher(shift=3)
-message = "Hello, World! 2026"
+    if any(char in string.punctuation for char in password):
+        score += 1
+    else:
+        feedback.append("Missing special character")
 
-encrypted = cipher.encrypt(message)
-decrypted = cipher.decrypt(encrypted)
+    return {"score": score, "feedback": feedback}
 
-print(f"Original:  {message}")
-print(f"Encrypted: {encrypted}")
-print(f"Decrypted: {decrypted}")
+def process_password_file(input_path: str, output_path: str) -> None:
+    """Reads passwords from a file, evaluates them, and writes a report."""
+    input_file = Path(input_path)
+    
+    if not input_file.exists():
+        print(f"Error: {input_path} could not be found.")
+        return
+
+    passwords = input_file.read_text(encoding="utf-8").splitlines()
+    report_lines = []
+
+    for idx, pwd in enumerate(passwords, start=1):
+        clean_pwd = pwd.strip()
+        if not clean_pwd:
+            continue
+            
+        result = check_password_strength(clean_pwd)
+        status = "Strong" if result["score"] == 5 else "Needs Improvement"
+        
+        report_lines.append(f"Password {idx}: Score {result['score']}/5 [{status}]")
+        if result["feedback"]:
+            report_lines.append(f"  -> Suggestions: {', '.join(result['feedback'])}")
+        report_lines.append("-" * 40)
+
+    Path(output_path).write_text("\n".join(report_lines), encoding="utf-8")
+    print(f"Analysis complete! Report saved to '{output_path}'.")
+
+if __name__ == "__main__":
+    # Create a dummy input file for testing purposes
+    sample_data = "weakpass\nCorrectHorseBatteryStaple!\nAdmin123!"
+    Path("passwords.txt").write_text(sample_data, encoding="utf-8")
+
+    # Run the batch processor
+    process_password_file("passwords.txt", "password_report.txt")
